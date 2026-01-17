@@ -6,6 +6,10 @@
   },
   "rewrites": [
     {
+      "source": "/api/generate",
+      "destination": "/api/generate.py"
+    },
+    {
       "source": "/",
       "destination": "/src/index.html"
     },
