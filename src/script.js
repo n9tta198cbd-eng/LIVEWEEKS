@@ -218,36 +218,71 @@ colorWhite.addEventListener('click', () => {
 });
 
 // Navigation arrows (cycle through previews)
-let previewIndex = 0;
-const previews = [
-    { color: 'black', lang: 'eng' },
-    { color: 'white', lang: 'eng' },
-    { color: 'black', lang: 'ru' },
-    { color: 'white', lang: 'ru' }
-];
+// Color-only navigation (arrows + swipe)
+const previewColors = ['black', 'white'];
 
-function updatePreviewIndex() {
-    previewIndex = previews.findIndex(p => 
-        p.color === state.color && p.lang === state.language
-    );
-    if (previewIndex === -1) previewIndex = 0;
+function getColorIndex() {
+    return previewColors.indexOf(state.color);
 }
 
+// ← Arrow
 navLeft.addEventListener('click', () => {
-    updatePreviewIndex();
-    previewIndex = (previewIndex - 1 + previews.length) % previews.length;
-    state.color = previews[previewIndex].color;
-    state.language = previews[previewIndex].lang;
-    updateUI();
+    const index =
+        (getColorIndex() - 1 + previewColors.length) %
+        previewColors.length;
+
+    state.color = previewColors[index];
+    updateColorOnly();
 });
 
+// → Arrow
 navRight.addEventListener('click', () => {
-    updatePreviewIndex();
-    previewIndex = (previewIndex + 1) % previews.length;
-    state.color = previews[previewIndex].color;
-    state.language = previews[previewIndex].lang;
-    updateUI();
+    const index =
+        (getColorIndex() + 1) %
+        previewColors.length;
+
+    state.color = previewColors[index];
+    updateColorOnly();
 });
+
+// Swipe support on preview
+const previewArea = document.getElementById('wallpaper-preview');
+
+let touchStartX = 0;
+let touchEndX = 0;
+
+if (previewArea) {
+    previewArea.addEventListener('touchstart', (e) => {
+        touchStartX = e.changedTouches[0].screenX;
+    });
+
+    previewArea.addEventListener('touchend', (e) => {
+        touchEndX = e.changedTouches[0].screenX;
+        handleSwipe();
+    });
+}
+
+function handleSwipe() {
+    const threshold = 40;
+    const delta = touchEndX - touchStartX;
+
+    if (Math.abs(delta) < threshold) return;
+
+    const index = getColorIndex();
+
+    if (delta > 0) {
+        // swipe right → previous color
+        state.color =
+            previewColors[(index - 1 + previewColors.length) % previewColors.length];
+    } else {
+        // swipe left → next color
+        state.color =
+            previewColors[(index + 1) % previewColors.length];
+    }
+
+    updateColorOnly();
+}
+
 
 // Open modal
 generateBtn.addEventListener('click', () => {
