@@ -1,7 +1,7 @@
 {
   "functions": {
     "api/generate.py": {
-      "runtime": "python3.9"
+      "runtime": "python3.12"
     }
   },
   "routes": [
@@ -12,12 +12,6 @@
     {
       "src": "/(.*)",
       "dest": "/src/$1"
-    }
-  ],
-  "rewrites": [
-    {
-      "source": "/api/generate",
-      "destination": "/api/generate.py"
     }
   ]
 }
