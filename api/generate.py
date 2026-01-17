@@ -6,19 +6,37 @@ from io import BytesIO
 import math
 
 
-def generate_life_calendar(birth_str: str, lifespan: int, w: int, h: int) -> bytes:
-    """Generate life calendar - each box = 1 week of life"""
+def generate_life_calendar(birth_str: str, lifespan: int, w: int, h: int, theme: str = "black") -> bytes:
+    """Generate life calendar - each box = 1 week of life
+
+    Args:
+        theme: "black" or "white" background
+    """
     birth_date = datetime.strptime(birth_str, "%Y-%m-%d").date()
     today = date.today()
 
     lived_days = (today - birth_date).days
     lived_weeks = lived_days // 7
+    total_weeks = lifespan * 52
 
-    # Colors
-    bg_color = (10, 10, 10)
-    lived_color = (255, 255, 255)
-    future_color = (50, 50, 50)
-    text_color = (120, 120, 120)
+    # Calculate percentage
+    percentage = (lived_weeks / total_weeks) * 100 if total_weeks > 0 else 0
+
+    # Colors based on theme
+    if theme == "black":
+        bg_color = (0, 0, 0)  # Black background
+        lived_color = (255, 255, 255)  # White dots for lived weeks
+        future_color = (60, 60, 60)  # Dark gray for future weeks
+        current_color = (255, 77, 77)  # Red dot for current week
+        text_main = (217, 217, 217)  # #D9D9D9
+        text_secondary = (152, 152, 152)  # #989898
+    else:  # white/light theme
+        bg_color = (184, 184, 184)  # Gray background
+        lived_color = (100, 100, 100)  # Gray dots for lived weeks
+        future_color = (255, 255, 255)  # White dots for future weeks
+        current_color = (255, 77, 77)  # Red dot for current week
+        text_main = (80, 80, 80)  # Darker gray text
+        text_secondary = (120, 120, 120)  # Medium gray text
 
     img = Image.new("RGB", (w, h), bg_color)
     draw = ImageDraw.Draw(img)
@@ -27,47 +45,28 @@ def generate_life_calendar(birth_str: str, lifespan: int, w: int, h: int) -> byt
     cols = 52
     rows = lifespan
 
-    # Padding for iPhone clock at top
-    clock_padding = h * 0.12
-    title_area = h * 0.05
-    padding_x = w * 0.08
-    padding_bottom = h * 0.08
+    # Calculate grid dimensions (based on CSS: 434.95px x 680.6px for 428px width)
+    grid_width = w * 1.016  # 434.95 / 428
+    grid_height = h * 0.735  # 680.6 / 926
 
-    grid_start_y = clock_padding + title_area
-    grid_width = w - (2 * padding_x)
-    grid_height = h - grid_start_y - padding_bottom
+    # Start position (from CSS: top: 166.03px = 17.9% of 926px)
+    grid_start_y = h * 0.179
 
     cell_w = grid_width / cols
     cell_h = grid_height / rows
     cell_size = min(cell_w, cell_h)
 
-    gap = cell_size * 0.3
+    gap = cell_size * 0.25
     dot_size = cell_size - gap
 
     actual_grid_width = cols * cell_size
     actual_grid_height = rows * cell_size
 
-    # Center grid
+    # Center grid horizontally
     offset_x = (w - actual_grid_width) / 2
-    offset_y = grid_start_y + (grid_height - actual_grid_height) / 2
+    offset_y = grid_start_y
 
-    # Load fonts
-    try:
-        title_font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", int(w * 0.038))
-    except:
-        try:
-            title_font = ImageFont.truetype("arial.ttf", int(w * 0.038))
-        except:
-            title_font = ImageFont.load_default()
-
-    # Draw title
-    title = "Your life in weeks."
-    bbox = draw.textbbox((0, 0), title, font=title_font)
-    title_x = (w - bbox[2]) / 2
-    title_y = clock_padding + (title_area - bbox[3]) / 2
-    draw.text((title_x, title_y), title, fill=(255, 255, 255), font=title_font)
-
-    # Draw weeks grid - circles instead of rectangles
+    # Draw weeks grid - circles
     for year in range(rows):
         for week in range(cols):
             week_num = year * 52 + week
@@ -75,25 +74,55 @@ def generate_life_calendar(birth_str: str, lifespan: int, w: int, h: int) -> byt
             center_y = offset_y + year * cell_size + cell_size / 2
             radius = dot_size / 2
 
-            if week_num < lived_weeks:
-                color = lived_color
+            # Determine color
+            if week_num == lived_weeks:
+                color = current_color  # Current week - RED
+            elif week_num < lived_weeks:
+                color = lived_color  # Lived weeks
             else:
-                color = future_color
+                color = future_color  # Future weeks
 
             draw.ellipse([center_x - radius, center_y - radius,
                          center_x + radius, center_y + radius], fill=color)
 
-    # Draw logo at bottom center
-    logo_size = int(w * 0.035)
-    logo_x = w / 2
-    logo_y = h - padding_bottom * 0.4
-    draw.ellipse([logo_x - logo_size/2, logo_y - logo_size/2,
-                  logo_x + logo_size/2, logo_y + logo_size/2],
-                 outline=(80, 80, 80), width=int(logo_size * 0.05))
-    dot_r = logo_size * 0.12
-    draw.ellipse([logo_x + logo_size*0.18 - dot_r, logo_y - logo_size*0.18 - dot_r,
-                  logo_x + logo_size*0.18 + dot_r, logo_y - logo_size*0.18 + dot_r],
-                 fill=(80, 80, 80))
+    # Load fonts
+    try:
+        # Font sizes from CSS
+        main_font_size = int(w * 0.0366)  # 15.6854 / 428
+        small_font_size = int(w * 0.0236)  # 10.0835 / 428
+
+        main_font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", main_font_size)
+        small_font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", small_font_size)
+    except:
+        try:
+            main_font = ImageFont.truetype("arial.ttf", int(w * 0.0366))
+            small_font = ImageFont.truetype("arial.ttf", int(w * 0.0236))
+        except:
+            main_font = ImageFont.load_default()
+            small_font = ImageFont.load_default()
+
+    # Draw percentage text (from CSS: top: 799.3px = 86.3% of 926px)
+    percentage_text = f"{percentage:.1f}% to {lifespan}"
+    percentage_y = h * 0.863
+    bbox = draw.textbbox((0, 0), percentage_text, font=small_font)
+    percentage_x = (w - bbox[2]) / 2
+    draw.text((percentage_x, percentage_y), percentage_text, fill=text_secondary, font=small_font)
+
+    # Draw main text (from CSS: top: 830.54px = 89.6% of 926px)
+    main_text_line1 = "ACT NOW"
+    main_text_line2 = "YOU STILL HAVE TIME"
+    main_y = h * 0.896
+
+    # Draw first line
+    bbox1 = draw.textbbox((0, 0), main_text_line1, font=main_font)
+    line1_x = (w - bbox1[2]) / 2
+    draw.text((line1_x, main_y), main_text_line1, fill=text_main, font=main_font)
+
+    # Draw second line
+    bbox2 = draw.textbbox((0, 0), main_text_line2, font=main_font)
+    line2_x = (w - bbox2[2]) / 2
+    line2_y = main_y + (bbox1[3] - bbox1[1])
+    draw.text((line2_x, line2_y), main_text_line2, fill=text_main, font=main_font)
 
     buffer = BytesIO()
     img.save(buffer, format="PNG", optimize=True)
@@ -324,9 +353,10 @@ class handler(BaseHTTPRequestHandler):
             if cal_type == 'life':
                 birth = params.get('birth', [''])[0]
                 lifespan = int(params.get('lifespan', ['90'])[0])
+                theme = params.get('theme', ['black'])[0]  # black or white
                 if not birth:
                     raise ValueError("Missing birth parameter")
-                image_bytes = generate_life_calendar(birth, lifespan, w, h)
+                image_bytes = generate_life_calendar(birth, lifespan, w, h, theme)
 
             elif cal_type == 'year':
                 image_bytes = generate_year_calendar(w, h)
