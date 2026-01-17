@@ -302,7 +302,7 @@ body {
 .nav-arrow {
     position: absolute;
     top: 50%;
-    margin: 0 -25px;
+    margin: 0 -40px;
     transform: translateY(-50%);
     z-index: 10;
 }
