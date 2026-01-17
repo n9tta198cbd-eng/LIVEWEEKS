@@ -4,14 +4,18 @@
       "runtime": "python3.12"
     }
   },
-  "routes": [
+  "rewrites": [
     {
-      "src": "/api/generate",
-      "dest": "/api/generate.py"
+      "source": "/",
+      "destination": "/src/index.html"
     },
     {
-      "src": "/(.*)",
-      "dest": "/src/$1"
+      "source": "/(.*\\.(js|css|png|jpg|jpeg|gif|svg|otf|ttf|woff|woff2))",
+      "destination": "/src/$1"
+    },
+    {
+      "source": "/(img|fonts)/(.*)",
+      "destination": "/src/$1/$2"
     }
   ]
 }
