@@ -1,318 +1,360 @@
 from http.server import BaseHTTPRequestHandler
 from urllib.parse import urlparse, parse_qs
+from datetime import date, datetime, timedelta
 from PIL import Image, ImageDraw, ImageFont
-from datetime import datetime, timedelta
 from io import BytesIO
 import math
 
-def generate_life_calendar(birth_date_str, lifespan, width, height):
-    """
-    Генерирует календарь жизни в неделях
-    """
-    # Парсим дату рождения
-    birth_date = datetime.strptime(birth_date_str, '%Y-%m-%d')
-    today = datetime.now()
 
-    # Цвета
-    bg_color = (0, 0, 0)  # Черный фон
-    lived_color = (255, 255, 255)  # Белый для прожитых недель
-    future_color = (60, 60, 60)  # Темно-серый для будущих недель
-    grid_color = (40, 40, 40)  # Цвет сетки
+def generate_life_calendar(birth_str: str, lifespan: int, w: int, h: int) -> bytes:
+    """Generate life calendar - each box = 1 week of life"""
+    birth_date = datetime.strptime(birth_str, "%Y-%m-%d").date()
+    today = date.today()
 
-    # Создаем изображение
-    img = Image.new('RGB', (width, height), bg_color)
+    lived_days = (today - birth_date).days
+    lived_weeks = lived_days // 7
+
+    # Colors
+    bg_color = (10, 10, 10)
+    lived_color = (255, 255, 255)
+    future_color = (50, 50, 50)
+    text_color = (120, 120, 120)
+
+    img = Image.new("RGB", (w, h), bg_color)
     draw = ImageDraw.Draw(img)
 
-    # Рассчитываем параметры сетки
-    total_weeks = lifespan * 52
-    weeks_per_row = 52
-    total_rows = lifespan
+    # Grid: 52 columns x lifespan rows
+    cols = 52
+    rows = lifespan
 
-    # Паддинги и размеры
-    padding_top = 100
-    padding_bottom = 100
-    padding_left = 50
-    padding_right = 50
+    # Padding for iPhone clock at top
+    clock_padding = h * 0.12
+    title_area = h * 0.05
+    padding_x = w * 0.08
+    padding_bottom = h * 0.08
 
-    # Доступная область для календаря
-    available_width = width - padding_left - padding_right
-    available_height = height - padding_top - padding_bottom
+    grid_start_y = clock_padding + title_area
+    grid_width = w - (2 * padding_x)
+    grid_height = h - grid_start_y - padding_bottom
 
-    # Размер ячейки
-    cell_width = available_width / weeks_per_row
-    cell_height = available_height / total_rows
-    cell_size = min(cell_width, cell_height)
+    cell_w = grid_width / cols
+    cell_h = grid_height / rows
+    cell_size = min(cell_w, cell_h)
 
-    # Размер кружка (с зазором)
     gap = cell_size * 0.3
-    circle_radius = (cell_size - gap) / 2
+    dot_size = cell_size - gap
 
-    # Рассчитываем количество прожитых недель
-    weeks_lived = math.floor((today - birth_date).days / 7)
+    actual_grid_width = cols * cell_size
+    actual_grid_height = rows * cell_size
 
-    # Центрируем календарь
-    grid_width = weeks_per_row * cell_size
-    grid_height = total_rows * cell_size
-    start_x = (width - grid_width) / 2
-    start_y = (height - grid_height) / 2
+    # Center grid
+    offset_x = (w - actual_grid_width) / 2
+    offset_y = grid_start_y + (grid_height - actual_grid_height) / 2
 
-    # Рисуем кружки
-    for year in range(total_rows):
-        for week in range(weeks_per_row):
-            week_number = year * weeks_per_row + week
+    # Load fonts
+    try:
+        title_font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", int(w * 0.038))
+    except:
+        try:
+            title_font = ImageFont.truetype("arial.ttf", int(w * 0.038))
+        except:
+            title_font = ImageFont.load_default()
 
-            # Центр кружка
-            cx = start_x + week * cell_size + cell_size / 2
-            cy = start_y + year * cell_size + cell_size / 2
+    # Draw title
+    title = "Your life in weeks."
+    bbox = draw.textbbox((0, 0), title, font=title_font)
+    title_x = (w - bbox[2]) / 2
+    title_y = clock_padding + (title_area - bbox[3]) / 2
+    draw.text((title_x, title_y), title, fill=(255, 255, 255), font=title_font)
 
-            # Определяем цвет
-            if week_number < weeks_lived:
+    # Draw weeks grid - circles instead of rectangles
+    for year in range(rows):
+        for week in range(cols):
+            week_num = year * 52 + week
+            center_x = offset_x + week * cell_size + cell_size / 2
+            center_y = offset_y + year * cell_size + cell_size / 2
+            radius = dot_size / 2
+
+            if week_num < lived_weeks:
                 color = lived_color
             else:
                 color = future_color
 
-            # Рисуем кружок
-            draw.ellipse(
-                [cx - circle_radius, cy - circle_radius,
-                 cx + circle_radius, cy + circle_radius],
-                fill=color
-            )
+            draw.ellipse([center_x - radius, center_y - radius,
+                         center_x + radius, center_y + radius], fill=color)
 
-    # Добавляем текст (возраст)
-    try:
-        font_large = ImageFont.truetype("arial.ttf", 60)
-        font_small = ImageFont.truetype("arial.ttf", 30)
-    except:
-        font_large = ImageFont.load_default()
-        font_small = ImageFont.load_default()
+    # Draw logo at bottom center
+    logo_size = int(w * 0.035)
+    logo_x = w / 2
+    logo_y = h - padding_bottom * 0.4
+    draw.ellipse([logo_x - logo_size/2, logo_y - logo_size/2,
+                  logo_x + logo_size/2, logo_y + logo_size/2],
+                 outline=(80, 80, 80), width=int(logo_size * 0.05))
+    dot_r = logo_size * 0.12
+    draw.ellipse([logo_x + logo_size*0.18 - dot_r, logo_y - logo_size*0.18 - dot_r,
+                  logo_x + logo_size*0.18 + dot_r, logo_y - logo_size*0.18 + dot_r],
+                 fill=(80, 80, 80))
 
-    age = math.floor((today - birth_date).days / 365.25)
-    age_text = f"{age} years"
-
-    # Рисуем возраст в верхней части
-    text_bbox = draw.textbbox((0, 0), age_text, font=font_large)
-    text_width = text_bbox[2] - text_bbox[0]
-    text_x = (width - text_width) / 2
-    draw.text((text_x, 30), age_text, fill=lived_color, font=font_large)
-
-    # Конвертируем в байты
     buffer = BytesIO()
-    img.save(buffer, format='PNG')
+    img.save(buffer, format="PNG", optimize=True)
+    buffer.seek(0)
     return buffer.getvalue()
 
 
-def generate_year_calendar(width, height):
-    """
-    Генерирует календарь текущего года по дням
-    """
-    today = datetime.now()
-    year = today.year
+def generate_year_calendar(w: int, h: int) -> bytes:
+    """Generate year calendar - each box = 1 day of current year"""
+    today = date.today()
+    year_start = date(today.year, 1, 1)
+    year_end = date(today.year, 12, 31)
 
-    # Цвета
-    bg_color = (0, 0, 0)
-    lived_color = (255, 255, 255)
-    future_color = (60, 60, 60)
+    total_days = (year_end - year_start).days + 1
+    elapsed_days = (today - year_start).days
 
-    # Создаем изображение
-    img = Image.new('RGB', (width, height), bg_color)
+    bg_color = (10, 10, 10)
+    passed_color = (255, 255, 255)
+    future_color = (50, 50, 50)
+    text_color = (120, 120, 120)
+
+    img = Image.new("RGB", (w, h), bg_color)
     draw = ImageDraw.Draw(img)
 
-    # Параметры сетки
-    days_in_year = 366 if (year % 4 == 0 and year % 100 != 0) or (year % 400 == 0) else 365
-    weeks_per_row = 52
-    total_rows = math.ceil(days_in_year / 7)
+    # Padding for iPhone clock at top
+    clock_padding = h * 0.12
+    title_area = h * 0.06
+    padding_x = w * 0.08
+    padding_bottom = h * 0.08
 
-    # Паддинги
-    padding_top = 100
-    padding_bottom = 100
-    padding_left = 50
-    padding_right = 50
+    grid_start_y = clock_padding + title_area
+    grid_width = w - (2 * padding_x)
+    grid_height = h - grid_start_y - padding_bottom
 
-    available_width = width - padding_left - padding_right
-    available_height = height - padding_top - padding_bottom
+    # Grid layout for year (weeks as columns, 7 rows for days)
+    cols = 53  # weeks in year
+    rows = 7   # days in week
 
-    cell_width = available_width / weeks_per_row
-    cell_height = available_height / total_rows
-    cell_size = min(cell_width, cell_height)
+    cell_w = grid_width / cols
+    cell_h = grid_height / rows
+    cell_size = min(cell_w, cell_h)
 
     gap = cell_size * 0.3
-    circle_radius = (cell_size - gap) / 2
+    dot_size = cell_size - gap
 
-    # День года
-    day_of_year = today.timetuple().tm_yday
+    actual_grid_width = cols * cell_size
+    actual_grid_height = rows * cell_size
+    offset_x = (w - actual_grid_width) / 2
+    offset_y = grid_start_y + (grid_height - actual_grid_height) / 2
 
-    # Центрируем
-    grid_width = weeks_per_row * cell_size
-    grid_height = total_rows * cell_size
-    start_x = (width - grid_width) / 2
-    start_y = (height - grid_height) / 2
-
-    # Рисуем дни
-    for day in range(days_in_year):
-        week = day // 7
-        day_in_week = day % 7
-
-        cx = start_x + day_in_week * cell_size + cell_size / 2
-        cy = start_y + week * cell_size + cell_size / 2
-
-        color = lived_color if day < day_of_year else future_color
-
-        draw.ellipse(
-            [cx - circle_radius, cy - circle_radius,
-             cx + circle_radius, cy + circle_radius],
-            fill=color
-        )
-
-    # Добавляем год
+    # Load fonts
     try:
-        font_large = ImageFont.truetype("arial.ttf", 60)
+        title_font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", int(w * 0.05))
+        small_font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", int(w * 0.022))
     except:
-        font_large = ImageFont.load_default()
+        try:
+            title_font = ImageFont.truetype("arial.ttf", int(w * 0.05))
+            small_font = ImageFont.truetype("arial.ttf", int(w * 0.022))
+        except:
+            title_font = ImageFont.load_default()
+            small_font = title_font
 
-    year_text = str(year)
-    text_bbox = draw.textbbox((0, 0), year_text, font=font_large)
-    text_width = text_bbox[2] - text_bbox[0]
-    text_x = (width - text_width) / 2
-    draw.text((text_x, 30), year_text, fill=lived_color, font=font_large)
+    # Draw year
+    year_text = str(today.year)
+    bbox = draw.textbbox((0, 0), year_text, font=title_font)
+    draw.text(((w - bbox[2]) / 2, clock_padding + (title_area - bbox[3]) / 2), year_text, fill=(255, 255, 255), font=title_font)
+
+    # Draw days left at bottom
+    days_left = total_days - elapsed_days - 1
+    days_text = f"{days_left} days left"
+    bbox2 = draw.textbbox((0, 0), days_text, font=small_font)
+    draw.text(((w - bbox2[2]) / 2, h - padding_bottom * 0.5), days_text, fill=text_color, font=small_font)
+
+    # Draw days (column = week number, row = day of week) - circles
+    for day_num in range(total_days):
+        day_date = year_start + timedelta(days=day_num)
+        week_num = day_date.isocalendar()[1] - 1
+        day_of_week = day_date.weekday()  # 0=Monday
+
+        if week_num >= cols:
+            week_num = cols - 1
+
+        center_x = offset_x + week_num * cell_size + cell_size / 2
+        center_y = offset_y + day_of_week * cell_size + cell_size / 2
+        radius = dot_size / 2
+
+        if day_num < elapsed_days:
+            color = passed_color
+        else:
+            color = future_color
+
+        draw.ellipse([center_x - radius, center_y - radius,
+                     center_x + radius, center_y + radius], fill=color)
+
+    # Draw logo at bottom center
+    logo_size = int(w * 0.035)
+    logo_x = w / 2
+    logo_y = h - padding_bottom * 0.4
+    draw.ellipse([logo_x - logo_size/2, logo_y - logo_size/2,
+                  logo_x + logo_size/2, logo_y + logo_size/2],
+                 outline=(80, 80, 80), width=int(logo_size * 0.05))
+    dot_r = logo_size * 0.12
+    draw.ellipse([logo_x + logo_size*0.18 - dot_r, logo_y - logo_size*0.18 - dot_r,
+                  logo_x + logo_size*0.18 + dot_r, logo_y - logo_size*0.18 + dot_r],
+                 fill=(80, 80, 80))
 
     buffer = BytesIO()
-    img.save(buffer, format='PNG')
+    img.save(buffer, format="PNG", optimize=True)
+    buffer.seek(0)
     return buffer.getvalue()
 
 
-def generate_goal_calendar(goal_name, start_date_str, deadline_str, width, height):
-    """
-    Генерирует календарь обратного отсчета до цели
-    """
-    start_date = datetime.strptime(start_date_str, '%Y-%m-%d')
-    deadline = datetime.strptime(deadline_str, '%Y-%m-%d')
-    today = datetime.now()
+def generate_goal_calendar(goal: str, start_str: str, deadline_str: str, w: int, h: int) -> bytes:
+    """Generate goal calendar - countdown to deadline"""
+    start_date = datetime.strptime(start_str, "%Y-%m-%d").date()
+    deadline_date = datetime.strptime(deadline_str, "%Y-%m-%d").date()
+    today = date.today()
 
-    # Цвета
-    bg_color = (0, 0, 0)
-    completed_color = (255, 255, 255)
-    remaining_color = (60, 60, 60)
+    total_days = (deadline_date - start_date).days
+    if total_days <= 0:
+        total_days = 30
 
-    img = Image.new('RGB', (width, height), bg_color)
+    elapsed_days = max(0, min((today - start_date).days, total_days))
+    days_left = max(0, total_days - elapsed_days)
+
+    bg_color = (10, 10, 10)
+    passed_color = (255, 255, 255)
+    future_color = (50, 50, 50)
+    text_color = (120, 120, 120)
+
+    img = Image.new("RGB", (w, h), bg_color)
     draw = ImageDraw.Draw(img)
 
-    # Вычисляем дни
-    total_days = (deadline - start_date).days
-    days_passed = max(0, (today - start_date).days)
-    days_passed = min(days_passed, total_days)
+    # Padding for iPhone clock at top
+    clock_padding = h * 0.12
+    title_area = h * 0.06
+    padding_x = w * 0.08
+    padding_bottom = h * 0.08
 
-    # Параметры сетки
-    days_per_row = 30
-    total_rows = math.ceil(total_days / days_per_row)
+    grid_start_y = clock_padding + title_area
+    grid_width = w - (2 * padding_x)
+    grid_height = h - grid_start_y - padding_bottom
 
-    padding_top = 150
-    padding_bottom = 100
-    padding_left = 50
-    padding_right = 50
+    # Calculate optimal grid
+    aspect = grid_width / grid_height
+    cols = max(7, int(math.sqrt(total_days * aspect)))
+    rows = math.ceil(total_days / cols)
 
-    available_width = width - padding_left - padding_right
-    available_height = height - padding_top - padding_bottom
-
-    cell_width = available_width / days_per_row
-    cell_height = available_height / total_rows
-    cell_size = min(cell_width, cell_height)
+    cell_w = grid_width / cols
+    cell_h = grid_height / rows
+    cell_size = min(cell_w, cell_h)
 
     gap = cell_size * 0.3
-    circle_radius = (cell_size - gap) / 2
+    dot_size = cell_size - gap
 
-    grid_width = days_per_row * cell_size
-    grid_height = total_rows * cell_size
-    start_x = (width - grid_width) / 2
-    start_y = (height - grid_height) / 2 + 50
+    actual_grid_width = cols * cell_size
+    actual_grid_height = rows * cell_size
+    offset_x = (w - actual_grid_width) / 2
+    offset_y = grid_start_y + (grid_height - actual_grid_height) / 2
 
-    # Рисуем дни
-    for day in range(total_days):
-        row = day // days_per_row
-        col = day % days_per_row
-
-        cx = start_x + col * cell_size + cell_size / 2
-        cy = start_y + row * cell_size + cell_size / 2
-
-        color = completed_color if day < days_passed else remaining_color
-
-        draw.ellipse(
-            [cx - circle_radius, cy - circle_radius,
-             cx + circle_radius, cy + circle_radius],
-            fill=color
-        )
-
-    # Добавляем название цели и дни до цели
+    # Load fonts
     try:
-        font_large = ImageFont.truetype("arial.ttf", 50)
-        font_small = ImageFont.truetype("arial.ttf", 30)
+        title_font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", int(w * 0.035))
+        small_font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", int(w * 0.022))
     except:
-        font_large = ImageFont.load_default()
-        font_small = ImageFont.load_default()
+        try:
+            title_font = ImageFont.truetype("arial.ttf", int(w * 0.035))
+            small_font = ImageFont.truetype("arial.ttf", int(w * 0.022))
+        except:
+            title_font = ImageFont.load_default()
+            small_font = title_font
 
-    days_remaining = max(0, total_days - days_passed)
+    # Goal name
+    bbox = draw.textbbox((0, 0), goal, font=title_font)
+    draw.text(((w - bbox[2]) / 2, clock_padding + (title_area - bbox[3]) / 2), goal, fill=(255, 255, 255), font=title_font)
 
-    goal_text = goal_name
-    text_bbox = draw.textbbox((0, 0), goal_text, font=font_large)
-    text_width = text_bbox[2] - text_bbox[0]
-    text_x = (width - text_width) / 2
-    draw.text((text_x, 30), goal_text, fill=completed_color, font=font_large)
+    # Days left at bottom
+    days_text = f"{days_left} days to go"
+    bbox2 = draw.textbbox((0, 0), days_text, font=small_font)
+    draw.text(((w - bbox2[2]) / 2, h - padding_bottom * 0.5), days_text, fill=text_color, font=small_font)
 
-    days_text = f"{days_remaining} days remaining"
-    text_bbox = draw.textbbox((0, 0), days_text, font=font_small)
-    text_width = text_bbox[2] - text_bbox[0]
-    text_x = (width - text_width) / 2
-    draw.text((text_x, 90), days_text, fill=completed_color, font=font_small)
+    # Draw days - circles
+    for i in range(total_days):
+        row = i // cols
+        col = i % cols
+        center_x = offset_x + col * cell_size + cell_size / 2
+        center_y = offset_y + row * cell_size + cell_size / 2
+        radius = dot_size / 2
+
+        if i < elapsed_days:
+            color = passed_color
+        else:
+            color = future_color
+
+        draw.ellipse([center_x - radius, center_y - radius,
+                     center_x + radius, center_y + radius], fill=color)
+
+    # Draw logo at bottom center
+    logo_size = int(w * 0.035)
+    logo_x = w / 2
+    logo_y = h - padding_bottom * 0.4
+    draw.ellipse([logo_x - logo_size/2, logo_y - logo_size/2,
+                  logo_x + logo_size/2, logo_y + logo_size/2],
+                 outline=(80, 80, 80), width=int(logo_size * 0.05))
+    dot_r = logo_size * 0.12
+    draw.ellipse([logo_x + logo_size*0.18 - dot_r, logo_y - logo_size*0.18 - dot_r,
+                  logo_x + logo_size*0.18 + dot_r, logo_y - logo_size*0.18 + dot_r],
+                 fill=(80, 80, 80))
 
     buffer = BytesIO()
-    img.save(buffer, format='PNG')
+    img.save(buffer, format="PNG", optimize=True)
+    buffer.seek(0)
     return buffer.getvalue()
 
 
 class handler(BaseHTTPRequestHandler):
-    """
-    Vercel serverless handler
-    """
     def do_GET(self):
-        # Парсим URL и параметры
-        parsed_url = urlparse(self.path)
-        params = parse_qs(parsed_url.query)
-
-        # Получаем параметры
-        cal_type = params.get('type', ['life'])[0]
-        width = int(params.get('w', ['1179'])[0])
-        height = int(params.get('h', ['2556'])[0])
+        parsed = urlparse(self.path)
+        params = parse_qs(parsed.query)
 
         try:
+            cal_type = params.get('type', ['goal'])[0]
+            w = int(params.get('w', ['1179'])[0])
+            h = int(params.get('h', ['2556'])[0])
+            w = max(100, min(5000, w))
+            h = max(100, min(5000, h))
+
             if cal_type == 'life':
-                birth = params.get('birth', ['2000-01-01'])[0]
+                birth = params.get('birth', [''])[0]
                 lifespan = int(params.get('lifespan', ['90'])[0])
-                image_bytes = generate_life_calendar(birth, lifespan, width, height)
+                if not birth:
+                    raise ValueError("Missing birth parameter")
+                image_bytes = generate_life_calendar(birth, lifespan, w, h)
 
             elif cal_type == 'year':
-                image_bytes = generate_year_calendar(width, height)
+                image_bytes = generate_year_calendar(w, h)
 
             elif cal_type == 'goal':
                 goal = params.get('goal', ['My Goal'])[0]
-                start = params.get('start', ['2024-01-01'])[0]
-                deadline = params.get('deadline', ['2024-12-31'])[0]
-                image_bytes = generate_goal_calendar(goal, start, deadline, width, height)
-            else:
-                self.send_response(400)
-                self.send_header('Content-type', 'text/plain')
-                self.end_headers()
-                self.wfile.write(b'Invalid calendar type')
-                return
+                start = params.get('start', [''])[0]
+                deadline = params.get('deadline', [''])[0]
+                if not start or not deadline:
+                    raise ValueError("Missing start or deadline")
+                image_bytes = generate_goal_calendar(goal, start, deadline, w, h)
 
-            # Отправляем изображение
+            else:
+                raise ValueError(f"Unknown type: {cal_type}")
+
             self.send_response(200)
-            self.send_header('Content-type', 'image/png')
-            self.send_header('Content-Length', str(len(image_bytes)))
+            self.send_header('Content-Type', 'image/png')
             self.send_header('Cache-Control', 'no-cache, no-store, must-revalidate')
             self.end_headers()
             self.wfile.write(image_bytes)
 
-        except Exception as e:
-            self.send_response(500)
-            self.send_header('Content-type', 'text/plain')
+        except ValueError as e:
+            self.send_response(400)
+            self.send_header('Content-Type', 'text/plain')
             self.end_headers()
             self.wfile.write(f'Error: {str(e)}'.encode())
+        except Exception as e:
+            self.send_response(500)
+            self.send_header('Content-Type', 'text/plain')
+            self.end_headers()
+            self.wfile.write(f'Server error: {str(e)}'.encode())
