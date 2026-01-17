@@ -165,10 +165,11 @@ function updateUI() {
     
     // Update description text
     if (descriptionText) {
-        descriptionText.textContent = state.language === 'eng'
-            ? 'Create iPhone wallpapers that update every day. Track your life in weeks — from 0 to 90 years — and see how much time you still have.'
-            : 'Создавайте обои для iPhone, которые обновляются каждый день. Отслеживайте свою жизнь по неделям — от 0 до 90 лет — и смотрите, сколько времени у вас еще есть.';
+        descriptionText.innerHTML = state.language === 'eng'
+        ? 'Create iPhone wallpapers that update every day. Track your life in weeks — from 0 to 90 years —<br>and see how much time you still have.'
+        : 'Создавайте обои для iPhone, которые обновляются каждый день. Отслеживайте свою жизнь по неделям — от 0 до 90 лет —<br>и смотрите, сколько времени у вас еще есть.';
     }
+
     
     // Update modal translations
     updateModalTranslations();
