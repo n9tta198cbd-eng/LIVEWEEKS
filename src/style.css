@@ -257,7 +257,7 @@ body {
     margin: 24px 0;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     border: 1px solid #e0e0e0;
-    transition: background 0.3s;
+    transition: 0.3s;
 }
 
 .preview-button-wrapper.color-black {
