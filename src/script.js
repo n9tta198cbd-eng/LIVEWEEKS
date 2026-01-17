@@ -219,43 +219,10 @@ colorWhite.addEventListener('click', () => {
 
 // Navigation arrows (cycle through previews)
 // Color-only navigation (arrows + swipe)
-// ===== Animated preview (arrows + swipe) =====
-
 const previewColors = ['black', 'white'];
 
 function getColorIndex() {
     return previewColors.indexOf(state.color);
-}
-
-function animatePreview(direction) {
-    const container = document.getElementById('wallpaper-preview');
-    const currentImg = container.querySelector('.preview-img.active');
-
-    const newImg = document.createElement('img');
-    newImg.className = 'preview-img';
-    newImg.src = `img/${state.color}_${state.language}.png`;
-    newImg.alt = 'Preview';
-
-    if (direction === 'left') {
-        newImg.classList.add('enter-right');
-        currentImg.classList.add('exit-left');
-    } else if (direction === 'right') {
-        newImg.classList.add('enter-left');
-        currentImg.classList.add('exit-right');
-    } else {
-        newImg.classList.add('active');
-    }
-
-    container.appendChild(newImg);
-
-    requestAnimationFrame(() => {
-        newImg.classList.add('active');
-        newImg.classList.remove('enter-left', 'enter-right');
-    });
-
-    setTimeout(() => {
-        currentImg.remove();
-    }, 350);
 }
 
 // ← Arrow
@@ -265,7 +232,6 @@ navLeft.addEventListener('click', () => {
         previewColors.length;
 
     state.color = previewColors[index];
-    animatePreview('right');
     updateColorOnly();
 });
 
@@ -276,41 +242,46 @@ navRight.addEventListener('click', () => {
         previewColors.length;
 
     state.color = previewColors[index];
-    animatePreview('left');
     updateColorOnly();
 });
 
-// Swipe
+// Swipe support on preview
 const previewArea = document.getElementById('wallpaper-preview');
+
 let touchStartX = 0;
 let touchEndX = 0;
 
 if (previewArea) {
-    previewArea.addEventListener('touchstart', e => {
+    previewArea.addEventListener('touchstart', (e) => {
         touchStartX = e.changedTouches[0].screenX;
     });
 
-    previewArea.addEventListener('touchend', e => {
+    previewArea.addEventListener('touchend', (e) => {
         touchEndX = e.changedTouches[0].screenX;
-        const delta = touchEndX - touchStartX;
-        if (Math.abs(delta) < 40) return;
-
-        const index = getColorIndex();
-
-        if (delta > 0) {
-            state.color =
-                previewColors[(index - 1 + previewColors.length) % previewColors.length];
-            animatePreview('right');
-        } else {
-            state.color =
-                previewColors[(index + 1) % previewColors.length];
-            animatePreview('left');
-        }
-
-        updateColorOnly();
+        handleSwipe();
     });
 }
 
+function handleSwipe() {
+    const threshold = 40;
+    const delta = touchEndX - touchStartX;
+
+    if (Math.abs(delta) < threshold) return;
+
+    const index = getColorIndex();
+
+    if (delta > 0) {
+        // swipe right → previous color
+        state.color =
+            previewColors[(index - 1 + previewColors.length) % previewColors.length];
+    } else {
+        // swipe left → next color
+        state.color =
+            previewColors[(index + 1) % previewColors.length];
+    }
+
+    updateColorOnly();
+}
 
 
 // Open modal
