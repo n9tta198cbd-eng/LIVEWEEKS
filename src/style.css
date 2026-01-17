@@ -670,4 +670,45 @@ body {
     }
 }
 
+/* Swipe animation */
+.wallpaper-preview {
+    position: relative;
+    overflow: hidden;
+}
+
+.preview-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.35s ease, opacity 0.35s ease;
+}
+
+.preview-img.enter-right {
+    transform: translateX(100%);
+    opacity: 1;
+}
+
+.preview-img.enter-left {
+    transform: translateX(-100%);
+    opacity: 1;
+}
+
+.preview-img.exit-left {
+    transform: translateX(-100%);
+    opacity: 0;
+}
+
+.preview-img.exit-right {
+    transform: translateX(100%);
+    opacity: 0;
+}
+
+.preview-img.active {
+    transform: translateX(0);
+    opacity: 1;
+}
+
+
 
