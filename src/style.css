@@ -92,6 +92,7 @@ body {
     font-weight: 700;
     color: #666;
     line-height: 1.5;
+    letter-spacing: -0.2px;
 }
 
 .header-right {
@@ -181,11 +182,11 @@ body {
 }
 
 .toggle-input:not(:checked) + .toggle-slider .toggle-text-left {
-    color: #fff;
+    color: #E0E0E0;
 }
 
 .toggle-input:not(:checked) + .toggle-slider .toggle-text-right {
-    color: #999;
+    color: #666;
 }
 
 /* Color Selection */
@@ -641,17 +642,15 @@ body {
 @media (max-width: 480px) {
     .container {
         padding: 24px 20px;
-        border-radius: 0;
     }
 
     .header {
-        flex-direction: column;
-        gap: 20px;
+        flex-direction: row;     /* ✅ ВСЕГДА В РЯД */
+        align-items: flex-start;
     }
 
     .header-right {
-        align-items: flex-start;
-        width: 100%;
+        align-items: flex-end;   /* ✅ справа */
     }
 
     .preview-wrapper {
@@ -666,9 +665,9 @@ body {
 
     .modal-content {
         padding: 24px 20px;
-        border-radius: 0;
     }
 }
+
 
 /* Swipe animation */
 .wallpaper-preview {
