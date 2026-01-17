@@ -122,7 +122,7 @@ function updateApiUrl() {
     const day = String(state.birthDay || 1).padStart(2, '0');
     const birthDate = `${year}-${month}-${day}`;
     const lifeDuration = state.lifeDuration || 90;
-    const url = `https://lifedie.vercel.app/api/generate?type=life&birth=${birthDate}&lifes=${lifeDuration}`;
+    const url = `https://mainllac.vercel.app/api/generate?type=life&birth=${birthDate}&lifes=${lifeDuration}`;
     if (apiUrlInput) apiUrlInput.value = url;
 }
 

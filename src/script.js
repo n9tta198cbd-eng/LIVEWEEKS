@@ -122,7 +122,7 @@ function getApiBaseUrl() {
         return `${window.location.protocol}//${window.location.host}/api/generate`;
     }
     // Otherwise use remote API
-    return 'https://lifedie.vercel.app/api/generate';
+    return 'https://mainllac.vercel.app/api/generate';
 }
 
 // Update API URL based on current settings
