@@ -133,7 +133,10 @@ function updateApiUrl() {
     const lifeDuration = state.lifeDuration || 90;
     const model = state.iphoneModel || 'iphone15';
     const resolution = iphoneResolutions[model] || iphoneResolutions.iphone15;
-    const url = `/api/generate?type=life&birth=${birthDate}&lifespan=${lifeDuration}&w=${resolution.w}&h=${resolution.h}`;
+
+    // Use full URL with domain for Shortcuts compatibility
+    const baseUrl = window.location.origin;
+    const url = `${baseUrl}/api/generate?type=life&birth=${birthDate}&lifespan=${lifeDuration}&w=${resolution.w}&h=${resolution.h}`;
     if (apiUrlInput) apiUrlInput.value = url;
 }
 
