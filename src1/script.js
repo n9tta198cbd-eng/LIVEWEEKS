@@ -115,16 +115,6 @@ function updateModalTranslations() {
     updateApiUrl();
 }
 
-// Get base URL for API (local or remote)
-function getApiBaseUrl() {
-    // If running on localhost, use local server
-    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-        return `${window.location.protocol}//${window.location.host}/api/generate`;
-    }
-    // Otherwise use remote API
-    return 'https://lifedie.vercel.app/api/generate';
-}
-
 // Update API URL based on current settings
 function updateApiUrl() {
     const year = state.birthYear || 2009;
@@ -132,8 +122,7 @@ function updateApiUrl() {
     const day = String(state.birthDay || 1).padStart(2, '0');
     const birthDate = `${year}-${month}-${day}`;
     const lifeDuration = state.lifeDuration || 90;
-    const baseUrl = getApiBaseUrl();
-    const url = `${baseUrl}?type=life&birth=${birthDate}&lifes=${lifeDuration}`;
+    const url = `https://lifedie.vercel.app/api/generate?type=life&birth=${birthDate}&lifes=${lifeDuration}`;
     if (apiUrlInput) apiUrlInput.value = url;
 }
 
