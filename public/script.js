@@ -115,6 +115,15 @@ function updateModalTranslations() {
     updateApiUrl();
 }
 
+// iPhone screen resolutions
+const iphoneResolutions = {
+    iphone15: { w: 1179, h: 2556 },
+    iphone14: { w: 1170, h: 2532 },
+    iphone13: { w: 1170, h: 2532 },
+    iphone12: { w: 1170, h: 2532 },
+    iphone11: { w: 828, h: 1792 }
+};
+
 // Update API URL based on current settings
 function updateApiUrl() {
     const year = state.birthYear || 2009;
@@ -122,7 +131,9 @@ function updateApiUrl() {
     const day = String(state.birthDay || 1).padStart(2, '0');
     const birthDate = `${year}-${month}-${day}`;
     const lifeDuration = state.lifeDuration || 90;
-    const url = `https://lifedie.vercel.app/api/generate?type=life&birth=${birthDate}&lifes=${lifeDuration}`;
+    const model = state.iphoneModel || 'iphone15';
+    const resolution = iphoneResolutions[model] || iphoneResolutions.iphone15;
+    const url = `/api/generate?type=life&birth=${birthDate}&lifespan=${lifeDuration}&w=${resolution.w}&h=${resolution.h}`;
     if (apiUrlInput) apiUrlInput.value = url;
 }
 
