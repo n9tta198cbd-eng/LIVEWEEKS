@@ -1,0 +1,161 @@
+# -*- coding: utf-8 -*-
+from datetime import date, datetime
+from PIL import Image, ImageDraw, ImageFont
+from io import BytesIO
+from http.server import BaseHTTPRequestHandler
+from urllib.parse import urlparse, parse_qs
+import os
+
+# =========================
+# FONT LOADING
+# =========================
+FONT_PATH = None
+POSSIBLE_FONTS = [
+    "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
+    "/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf",
+    "C:/Windows/Fonts/arial.ttf",
+]
+
+for fp in POSSIBLE_FONTS:
+    if os.path.exists(fp):
+        FONT_PATH = fp
+        break
+
+
+def get_font(size_px: int):
+    if FONT_PATH:
+        return ImageFont.truetype(FONT_PATH, size_px)
+    return ImageFont.load_default()
+
+
+def draw_centered_text(draw, text, y_pos, font, color, width):
+    bbox = draw.textbbox((0, 0), text, font=font)
+    text_width = bbox[2] - bbox[0]
+    text_height = bbox[3] - bbox[1]
+    x = (width - text_width) // 2
+    draw.text((x, y_pos), text, fill=color, font=font)
+    return text_height
+
+
+def generate_life_calendar(birth_str, lifespan, w, h, theme, lang, font_size=0):
+    birth = datetime.strptime(birth_str, "%Y-%m-%d").date()
+    today = date.today()
+
+    lived_days = max(0, (today - birth).days)
+    lived_weeks = lived_days // 7
+    total_weeks = int(lifespan * 365.2422 / 7)
+    percent = (lived_weeks / total_weeks * 100) if total_weeks else 0
+
+    # Colors
+    if theme == "white":
+        bg = (230, 230, 230)
+        lived_color = (60, 60, 60)
+        future_color = (255, 255, 255)
+        current_color = (255, 77, 77)
+        text_main = (40, 40, 40)
+        text_sec = (110, 110, 110)
+    else:
+        bg = (0, 0, 0)
+        lived_color = (255, 255, 255)
+        future_color = (50, 50, 50)
+        current_color = (255, 77, 77)
+        text_main = (230, 230, 230)
+        text_sec = (150, 150, 150)
+
+    img = Image.new("RGB", (w, h), bg)
+    draw = ImageDraw.Draw(img)
+
+    # Grid
+    cols, rows = 52, lifespan
+    pad_top = int(h * 0.18)
+    pad_bot = int(h * 0.18)
+    pad_x = int(w * 0.08)
+
+    grid_w = w - pad_x * 2
+    grid_h = h - pad_top - pad_bot
+    cell = min(grid_w / cols, grid_h / rows)
+    gap = cell * 0.25
+    r = (cell - gap) / 2
+
+    ox = (w - cols * cell) / 2
+    oy = pad_top
+
+    for row in range(rows):
+        for col in range(cols):
+            i = row * cols + col
+            cx = ox + col * cell + cell / 2
+            cy = oy + row * cell + cell / 2
+            if i < lived_weeks:
+                c = lived_color
+            elif i == lived_weeks:
+                c = current_color
+            else:
+                c = future_color
+            draw.ellipse([cx - r, cy - r, cx + r, cy + r], fill=c)
+
+    # Font size: use fs param or default 50px
+    main_px = font_size if font_size > 0 else 50
+    small_px = main_px // 2
+
+    main_font = get_font(main_px)
+    small_font = get_font(small_px)
+
+    # Text
+    if lang == "ru":
+        line1 = "Действуй сейчас."
+        line2 = "У тебя ещё есть время."
+    else:
+        line1 = "ACT NOW"
+        line2 = "YOU STILL HAVE TIME"
+
+    percent_text = f"{percent:.1f}% to {lifespan}"
+
+    y_percent = int(h * 0.82)
+    draw_centered_text(draw, percent_text, y_percent, small_font, text_sec, w)
+
+    y_main = int(h * 0.865)
+    h1 = draw_centered_text(draw, line1, y_main, main_font, text_main, w)
+    draw_centered_text(draw, line2, y_main + h1 + 10, main_font, text_main, w)
+
+    buf = BytesIO()
+    img.save(buf, "PNG", optimize=True)
+    return buf.getvalue()
+
+
+def generate_image(params):
+    def get(name, default=None):
+        val = params.get(name, [default])
+        return val[0] if val else default
+
+    theme = get("theme", "black")
+    lang = get("lang", "en")
+    w = min(5000, max(300, int(get("w", 1179))))
+    h = min(5000, max(300, int(get("h", 2556))))
+    font_size = int(get("fs", 50))  # Default 50px
+    birth = get("birth")
+    if not birth:
+        raise ValueError("birth required")
+    lifespan = int(get("lifespan", 90))
+
+    return generate_life_calendar(birth, lifespan, w, h, theme, lang, font_size)
+
+
+class handler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        try:
+            parsed = urlparse(self.path)
+            params = parse_qs(parsed.query)
+            image_bytes = generate_image(params)
+
+            self.send_response(200)
+            self.send_header("Content-Type", "image/png")
+            self.send_header("Cache-Control", "no-cache, no-store, must-revalidate")
+            self.send_header("Access-Control-Allow-Origin", "*")
+            self.send_header("X-Version", "6.0-cal")
+            self.end_headers()
+            self.wfile.write(image_bytes)
+        except Exception as e:
+            self.send_response(500)
+            self.send_header("Content-Type", "text/plain")
+            self.end_headers()
+            self.wfile.write(f"Error: {str(e)}".encode())
