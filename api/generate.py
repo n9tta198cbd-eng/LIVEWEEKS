@@ -98,8 +98,8 @@ def generate_life_calendar(
             draw.ellipse([cx - r, cy - r, cx + r, cy + r], fill=color)
 
     # ===== TEXT =====
-    main_font = load_font(int(h * 0.15))
-    small_font = load_font(int(h * 0.08))
+    main_font = load_font(int(h * 0.5))
+    small_font = load_font(int(h * 0.5))
 
 
 
