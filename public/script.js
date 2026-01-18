@@ -21,7 +21,6 @@ const modalClose = document.getElementById('modal-close');
 const birthYearInput = document.getElementById('birth-year');
 const birthMonthInput = document.getElementById('birth-month');
 const birthDayInput = document.getElementById('birth-day');
-const lifeExpectancySelect = document.getElementById('life-expectancy');
 const iphoneModelSelect = document.getElementById('iphone-model');
 const apiUrlInput = document.getElementById('api-url');
 const copyBtn = document.getElementById('copy-btn');
@@ -36,7 +35,6 @@ const section1Title = document.getElementById('section-1-title');
 const section2Title = document.getElementById('section-2-title');
 const section3Title = document.getElementById('section-3-title');
 const birthDateLabel = document.getElementById('birth-date-label');
-const lifeExpectancyLabel = document.getElementById('life-expectancy-label');
 const iphoneModelLabel = document.getElementById('iphone-model-label');
 const automationInstruction = document.getElementById('automation-instruction');
 const shortcutInstruction = document.getElementById('shortcut-instruction');
@@ -60,7 +58,6 @@ const translations = {
         section2Title: 'Create Automation',
         section3Title: 'Create Shortcut',
         birthDateLabel: 'Date of Birth',
-        lifeExpectancyLabel: 'Life Expectancy',
         iphoneModelLabel: 'iPhone Model',
         automationInstruction: 'Open Shortcuts app → Automation → New → Time of Day → 6:00 AM → Repeat "Daily" → "Run Immediately" → "Create New Shortcut"',
         shortcutInstruction: 'ADD THESE ACTIONS:',
@@ -75,7 +72,6 @@ const translations = {
         section2Title: 'Создать автоматизацию',
         section3Title: 'Команды',
         birthDateLabel: 'Дата рождения',
-        lifeExpectancyLabel: 'Продолжительность жизни',
         iphoneModelLabel: 'Модель iPhone',
         automationInstruction: 'Откройте приложение Ярлыки → Автоматизация → Новый → Время дня → 6:00 → Повторять "Ежедневно" → "Запускать немедленно" → "Создать новый ярлык"',
         shortcutInstruction: 'ДОБАВЬТЕ ЭТИ ДЕЙСТВИЯ:',
@@ -94,7 +90,6 @@ function updateModalTranslations() {
     if (section2Title) section2Title.textContent = t.section2Title;
     if (section3Title) section3Title.textContent = t.section3Title;
     if (birthDateLabel) birthDateLabel.textContent = t.birthDateLabel;
-    if (lifeExpectancyLabel) lifeExpectancyLabel.textContent = t.lifeExpectancyLabel;
     if (iphoneModelLabel) iphoneModelLabel.textContent = t.iphoneModelLabel;
     if (automationInstruction) {
         if (state.language === 'eng') {
@@ -342,7 +337,7 @@ function updateStateFromInputs() {
     state.birthYear = parseInt(birthYearInput.value) || 2009;
     state.birthMonth = parseInt(birthMonthInput.value) || 8;
     state.birthDay = parseInt(birthDayInput.value) || 1;
-    state.lifeDuration = parseInt(lifeExpectancySelect.value) || 90;
+    state.lifeDuration = 90; // Fixed value
     state.iphoneModel = iphoneModelSelect.value || 'iphone15';
     updateApiUrl();
 }
@@ -359,9 +354,6 @@ if (birthMonthInput) {
 if (birthDayInput) {
     birthDayInput.addEventListener('input', updateStateFromInputs);
     birthDayInput.addEventListener('change', updateStateFromInputs);
-}
-if (lifeExpectancySelect) {
-    lifeExpectancySelect.addEventListener('change', updateStateFromInputs);
 }
 if (iphoneModelSelect) {
     iphoneModelSelect.addEventListener('change', updateStateFromInputs);
