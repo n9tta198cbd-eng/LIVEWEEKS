@@ -90,22 +90,29 @@ def generate_life_calendar(birth_str, lifespan, w, h, theme, lang, font_size=0):
                 c = future_color
             draw.ellipse([cx - r, cy - r, cx + r, cy + r], fill=c)
 
-    # Font size: use fs param or default 50px
-    main_px = font_size if font_size > 0 else 50
-    small_px = main_px // 2
+    # Adaptive font size based on screen width
+    # If fs param provided, use it; otherwise calculate from width
+    if font_size > 0:
+        main_px = font_size
+    else:
+        # ~4.2% of width (50px for 1179px width)
+        main_px = int(w * 0.042)
+        main_px = max(30, min(150, main_px))  # Clamp 30-150px
+
+    small_px = int(main_px * 0.6)
 
     main_font = get_font(main_px)
     small_font = get_font(small_px)
 
-    # Text
+    # Text - ALL UPPERCASE
     if lang == "ru":
-        line1 = "Действуй сейчас."
-        line2 = "У тебя еще есть время."
+        line1 = "ДЕЙСТВУЙ СЕЙЧАС"
+        line2 = "У ТЕБЯ ЕЩЕ ЕСТЬ ВРЕМЯ"
     else:
         line1 = "ACT NOW"
         line2 = "YOU STILL HAVE TIME"
 
-    percent_text = f"{percent:.1f}% to {lifespan}"
+    percent_text = f"{percent:.1f}% TO {lifespan}"
 
     y_percent = int(h * 0.82)
     draw_centered_text(draw, percent_text, y_percent, small_font, text_sec, w)
