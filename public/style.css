@@ -55,7 +55,7 @@ body {
 }
 
 .logo-img {
-    width: 75px;
+    width: 90px;
     object-fit: contain;
 }
 
@@ -65,25 +65,25 @@ body {
 }
 
 .brand-name {
-    font-size: 21px;
+    font-size: 28px;
     font-weight: 900;
     color: #9F9F9F;
     line-height: 1;
 }
 
 .brand-subtitle {
-    font-size: 21px;
+    font-size: 28px;
     font-weight: 900;
     color: #9F9F9F;
     line-height: 1;
 }
 
 .arrow-img {
-    height: 14px;
+    height: 18px;
     width: auto;
     display: inline;
     vertical-align: middle;
-    padding: 0 3px;
+    padding: 0 4px;
 }
 
 .class_top_header{
@@ -155,27 +155,21 @@ body {
 .toggle-text-left,
 .toggle-text-right {
     position: absolute;
-    font-size: 14px;
+    font-size: 16px;
     font-weight: 700;
     color: #9B9B9B;
     transition: color 0.3s;
     z-index: 1;
     pointer-events: none;
     text-shadow: inset 0px 1px 1px 0 #000;
-    top: 0;
-    bottom: 0;
-    display: flex;
-    align-items: center;
-    line-height: 25px;
-    height: 25px;
 }
 
 .toggle-text-left {
-    left: 8px;
+    left: 10px;
 }
 
 .toggle-text-right {
-    right: 10px;
+    right: 20px;
 }
 
 .toggle-input:checked + .toggle-slider::before {
@@ -302,11 +296,11 @@ color: #9f9f9f;
 }
 
 .nav-arrow {
-    width: 80px;
-    height: 80px;
+    width: 40px;
+    height: 40px;
     background: transparent;
     border: none;
-    font-size: 60px;
+    font-size: 30px;
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -316,19 +310,21 @@ color: #9f9f9f;
     padding: 0;
     position: absolute;
     top: 50%;
-    display: flex;
     transform: translateY(-50%);
     z-index: 2;
-    margin: 0 -30px;
-    justify-content: space-around;
+}
+
+.nav-arrow img {
+    width: 24px;
+    height: 24px;
 }
 
 .nav-arrow-left {
-    left: 0;
+    left: -15px;
 }
 
 .nav-arrow-right {
-    right: 0;
+    right: -15px;
 }
 
 
@@ -705,10 +701,21 @@ color: #9f9f9f;
     }
 
     .nav-arrow {
-        width: 80px;
-        height: 80px;
-        font-size: 60px;
-        margin: 0 -35px;
+        width: 36px;
+        height: 36px;
+    }
+
+    .nav-arrow img {
+        width: 20px;
+        height: 20px;
+    }
+
+    .nav-arrow-left {
+        left: -10px;
+    }
+
+    .nav-arrow-right {
+        right: -10px;
     }
 
     .modal-content {
