@@ -7,13 +7,27 @@ from urllib.parse import urlparse, parse_qs
 import os
 
 # =========================
-# FONT LOADING
+# FONT LOADING (CROSS-PLATFORM, WITH BUNDLED CYRILLIC FONT)
 # =========================
 FONT_PATH = None
-POSSIBLE_FONTS = [
+
+BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+
+LOCAL_FONTS = [
+    os.path.join(BASE_DIR, "public", "fonts", "helvetica_cyr_boldoblique.ttf"),
+    os.path.join(BASE_DIR, "public", "fonts", "helvetica_regular.otf"),
+    os.path.join(BASE_DIR, "public", "fonts", "helvetica_bold.otf"),
+]
+
+POSSIBLE_FONTS = LOCAL_FONTS + [
     "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
+    "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
     "/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf",
+    "/usr/share/fonts/truetype/ubuntu/Ubuntu-R.ttf",
+    "/usr/share/fonts/truetype/noto/NotoSans-Regular.ttf",
+    "/System/Library/Fonts/Arial.ttf",
     "C:/Windows/Fonts/arial.ttf",
+    "C:/Windows/Fonts/Arial.ttf",
 ]
 
 for fp in POSSIBLE_FONTS:
@@ -24,8 +38,14 @@ for fp in POSSIBLE_FONTS:
 
 def get_font(size_px: int):
     if FONT_PATH:
-        return ImageFont.truetype(FONT_PATH, size_px)
-    return ImageFont.load_default()
+        try:
+            return ImageFont.truetype(FONT_PATH, size_px)
+        except Exception:
+            pass
+    try:
+        return ImageFont.load_default(size=max(size_px // 8, 10))
+    except TypeError:
+        return ImageFont.load_default()
 
 
 def draw_centered_text(draw, text, y_pos, font, color, width):
