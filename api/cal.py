@@ -99,12 +99,14 @@ def generate_life_calendar(birth_str, lifespan, w, h, theme, lang, font_size=0):
     ox = (w - cols * cell) / 2
     oy = pad_top
 
-    # Draw red logo circle (mini logo) at top right
-    logo_radius = r * 1.5  # Make logo slightly bigger than grid circles
-    logo_x = w - pad_x - logo_radius * 2
-    logo_y = int(pad_top * 0.3)
-    draw.ellipse([logo_x - logo_radius, logo_y - logo_radius, 
-                  logo_x + logo_radius, logo_y + logo_radius], fill=(255, 77, 77))
+    # Try to load logo for current week
+    logo_img = None
+    logo_path = os.path.join(os.path.dirname(__file__), "..", "public", "img", "logo_mini.png")
+    if os.path.exists(logo_path):
+        try:
+            logo_img = Image.open(logo_path).convert("RGBA")
+        except Exception:
+            pass
 
     for row in range(rows):
         for col in range(cols):
@@ -113,11 +115,20 @@ def generate_life_calendar(birth_str, lifespan, w, h, theme, lang, font_size=0):
             cy = oy + row * cell + cell / 2
             if i < lived_weeks:
                 c = lived_color
+                draw.ellipse([cx - r, cy - r, cx + r, cy + r], fill=c)
             elif i == lived_weeks:
-                c = current_color
+                # Draw logo instead of red circle
+                if logo_img:
+                    logo_size = int(r * 2.2)
+                    logo_resized = logo_img.resize((logo_size, logo_size), Image.Resampling.LANCZOS)
+                    logo_x = int(cx - logo_size / 2)
+                    logo_y = int(cy - logo_size / 2)
+                    img.paste(logo_resized, (logo_x, logo_y), logo_resized)
+                else:
+                    draw.ellipse([cx - r, cy - r, cx + r, cy + r], fill=current_color)
             else:
                 c = future_color
-            draw.ellipse([cx - r, cy - r, cx + r, cy + r], fill=c)
+                draw.ellipse([cx - r, cy - r, cx + r, cy + r], fill=c)
 
     # Adaptive font size based on screen width
     # If fs param provided, use it; otherwise calculate from width
