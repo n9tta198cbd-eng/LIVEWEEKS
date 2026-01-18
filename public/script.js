@@ -73,7 +73,7 @@ const translations = {
         modalDescription: 'Визуализируйте всю свою жизнь по неделям. Каждый квадрат представляет одну неделю вашей жизни.',
         section1Title: 'Настройка',
         section2Title: 'Создать автоматизацию',
-        section3Title: 'Создать ярлык',
+        section3Title: 'Команды',
         birthDateLabel: 'Дата рождения',
         lifeExpectancyLabel: 'Продолжительность жизни',
         iphoneModelLabel: 'Модель iPhone',

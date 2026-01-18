@@ -106,8 +106,8 @@ def generate_life_calendar(
 
 
     if lang == "ru":
-        line1 = "ДЕЙСТВУЙ СЕЙЧАС,"
-        line2 = "У ТЕБЯ ЕЩЕ ЕСТЬ ВРЕМЯ"
+        line1 = "Действуй сейчас."
+        line2 = "У тебя ещё есть время."
         percent_text = f"{percent:.1f}% пути пройдено"
     else:
         line1 = "ACT NOW"
