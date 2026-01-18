@@ -3,7 +3,7 @@
   "buildCommand": "apt-get update && apt-get install -y fonts-dejavu fonts-liberation && pip install -r requirements.txt",
   "functions": {
     "api/**/*.py": {
-      "memory": 3008,
+      "memory": 2000,
       "maxDuration": 30
     }
   }
