@@ -41,6 +41,10 @@ const shortcutInstruction = document.getElementById('shortcut-instruction');
 const action1Text = document.getElementById('action-1-text');
 const action2Text = document.getElementById('action-2-text');
 const importantNote = document.getElementById('important-note');
+const yearLabel = document.getElementById('year-label');
+const monthLabel = document.getElementById('month-label');
+const dayLabel = document.getElementById('day-label');
+const dateError = document.getElementById('date-error');
 
 // Update preview image based on current state
 function updatePreview() {
@@ -59,6 +63,11 @@ const translations = {
         section3Title: 'Create Shortcut',
         birthDateLabel: 'Date of Birth',
         iphoneModelLabel: 'iPhone Model',
+        yearLabel: 'Year',
+        monthLabel: 'Month',
+        dayLabel: 'Day',
+        dateErrorInvalid: 'Invalid date',
+        dateErrorFuture: 'Date cannot be in the future',
         automationInstruction: 'Open Shortcuts app → Automation → New → Time of Day → 6:00 AM → Repeat "Daily" → "Run Immediately" → "Create New Shortcut"',
         shortcutInstruction: 'ADD THESE ACTIONS:',
         action1Text: '3.1 "Get Contents of URL" → paste URL:',
@@ -73,6 +82,11 @@ const translations = {
         section3Title: 'Команды',
         birthDateLabel: 'Дата рождения',
         iphoneModelLabel: 'Модель iPhone',
+        yearLabel: 'Год',
+        monthLabel: 'Месяц',
+        dayLabel: 'День',
+        dateErrorInvalid: 'Неверная дата',
+        dateErrorFuture: 'Дата не может быть в будущем',
         automationInstruction: 'Откройте приложение Ярлыки → Автоматизация → Новый → Время дня → 6:00 → Повторять "Ежедневно" → "Запускать немедленно" → "Создать новый ярлык"',
         shortcutInstruction: 'ДОБАВЬТЕ ЭТИ ДЕЙСТВИЯ:',
         action1Text: '3.1 "Получить содержимое URL" → вставьте URL:',
@@ -91,6 +105,9 @@ function updateModalTranslations() {
     if (section3Title) section3Title.textContent = t.section3Title;
     if (birthDateLabel) birthDateLabel.textContent = t.birthDateLabel;
     if (iphoneModelLabel) iphoneModelLabel.textContent = t.iphoneModelLabel;
+    if (yearLabel) yearLabel.textContent = t.yearLabel;
+    if (monthLabel) monthLabel.textContent = t.monthLabel;
+    if (dayLabel) dayLabel.textContent = t.dayLabel;
     if (automationInstruction) {
         if (state.language === 'eng') {
             automationInstruction.innerHTML = 'Open <a href="#" class="shortcuts-link">Shortcuts</a> app → Automation → New → Time of Day → 6:00 AM → Repeat "Daily" → "Run Immediately" → "Create New Shortcut"';
@@ -332,8 +349,61 @@ modalOverlay.addEventListener('click', (e) => {
     }
 });
 
+// Validate date
+function validateDate() {
+    const year = parseInt(birthYearInput.value);
+    const month = parseInt(birthMonthInput.value);
+    const day = parseInt(birthDayInput.value);
+
+    if (!year || !month || !day) {
+        return true; // Allow empty fields
+    }
+
+    // Check valid ranges
+    if (year < 1900 || year > 2100 || month < 1 || month > 12 || day < 1 || day > 31) {
+        showDateError('dateErrorInvalid');
+        return false;
+    }
+
+    // Check if date is valid
+    const date = new Date(year, month - 1, day);
+    if (date.getFullYear() !== year || date.getMonth() !== month - 1 || date.getDate() !== day) {
+        showDateError('dateErrorInvalid');
+        return false;
+    }
+
+    // Check if date is not in the future
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    if (date > today) {
+        showDateError('dateErrorFuture');
+        return false;
+    }
+
+    hideDateError();
+    return true;
+}
+
+function showDateError(messageKey) {
+    if (dateError) {
+        const t = translations[state.language];
+        dateError.textContent = t[messageKey];
+        dateError.style.display = 'block';
+    }
+}
+
+function hideDateError() {
+    if (dateError) {
+        dateError.style.display = 'none';
+    }
+}
+
 // Update state from inputs
 function updateStateFromInputs() {
+    if (!validateDate()) {
+        return; // Don't update if date is invalid
+    }
+
     state.birthYear = parseInt(birthYearInput.value) || 2009;
     state.birthMonth = parseInt(birthMonthInput.value) || 8;
     state.birthDay = parseInt(birthDayInput.value) || 1;
@@ -342,18 +412,36 @@ function updateStateFromInputs() {
     updateApiUrl();
 }
 
-// Input change handlers
+// Input change handlers with validation
 if (birthYearInput) {
-    birthYearInput.addEventListener('input', updateStateFromInputs);
-    birthYearInput.addEventListener('change', updateStateFromInputs);
+    birthYearInput.addEventListener('input', () => {
+        validateDate();
+        updateStateFromInputs();
+    });
+    birthYearInput.addEventListener('change', () => {
+        validateDate();
+        updateStateFromInputs();
+    });
 }
 if (birthMonthInput) {
-    birthMonthInput.addEventListener('input', updateStateFromInputs);
-    birthMonthInput.addEventListener('change', updateStateFromInputs);
+    birthMonthInput.addEventListener('input', () => {
+        validateDate();
+        updateStateFromInputs();
+    });
+    birthMonthInput.addEventListener('change', () => {
+        validateDate();
+        updateStateFromInputs();
+    });
 }
 if (birthDayInput) {
-    birthDayInput.addEventListener('input', updateStateFromInputs);
-    birthDayInput.addEventListener('change', updateStateFromInputs);
+    birthDayInput.addEventListener('input', () => {
+        validateDate();
+        updateStateFromInputs();
+    });
+    birthDayInput.addEventListener('change', () => {
+        validateDate();
+        updateStateFromInputs();
+    });
 }
 if (iphoneModelSelect) {
     iphoneModelSelect.addEventListener('change', updateStateFromInputs);

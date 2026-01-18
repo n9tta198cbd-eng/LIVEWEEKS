@@ -521,6 +521,21 @@ color: #9f9f9f;
     gap: 8px;
 }
 
+.date-input-wrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.date-input-label {
+    font-size: 11px;
+    color: #666;
+    text-transform: uppercase;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
 .date-input {
     flex: 1;
     padding: 10px 12px;

@@ -87,10 +87,20 @@
                 <div class="form-group">
                     <label for="birth-year" id="birth-date-label">Date of Birth</label>
                     <div class="date-inputs">
-                        <input type="number" id="birth-year" class="date-input" placeholder="2009" min="1900" max="2100">
-                        <input type="number" id="birth-month" class="date-input" placeholder="8" min="1" max="12">
-                        <input type="number" id="birth-day" class="date-input" placeholder="1" min="1" max="31">
+                        <div class="date-input-wrapper">
+                            <span class="date-input-label" id="year-label">Year</span>
+                            <input type="number" id="birth-year" class="date-input" placeholder="2009" min="1900" max="2100">
+                        </div>
+                        <div class="date-input-wrapper">
+                            <span class="date-input-label" id="month-label">Month</span>
+                            <input type="number" id="birth-month" class="date-input" placeholder="8" min="1" max="12">
+                        </div>
+                        <div class="date-input-wrapper">
+                            <span class="date-input-label" id="day-label">Day</span>
+                            <input type="number" id="birth-day" class="date-input" placeholder="1" min="1" max="31">
+                        </div>
                     </div>
+                    <div class="date-error" id="date-error" style="display: none; color: #ff4444; font-size: 12px; margin-top: 5px;"></div>
                 </div>
 
                 <div class="form-group">
