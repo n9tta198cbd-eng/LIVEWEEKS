@@ -101,12 +101,21 @@ def generate_life_calendar(birth_str, lifespan, w, h, theme, lang, font_size=0):
 
     # Try to load logo for current week
     logo_img = None
-    logo_path = os.path.join(os.path.dirname(__file__), "..", "public", "img", "logo_mini.png")
-    if os.path.exists(logo_path):
-        try:
-            logo_img = Image.open(logo_path).convert("RGBA")
-        except Exception:
-            pass
+    # Try multiple possible paths
+    possible_paths = [
+        os.path.join(os.path.dirname(__file__), "..", "public", "img", "logo_mini.png"),
+        os.path.join(os.path.dirname(__file__), "public", "img", "logo_mini.png"),
+        "/var/task/public/img/logo_mini.png",  # Vercel path
+        "public/img/logo_mini.png"
+    ]
+    
+    for logo_path in possible_paths:
+        if os.path.exists(logo_path):
+            try:
+                logo_img = Image.open(logo_path).convert("RGBA")
+                break
+            except Exception:
+                continue
 
     for row in range(rows):
         for col in range(cols):
