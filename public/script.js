@@ -154,14 +154,15 @@ function updateApiUrl() {
     const baseUrl = window.location.origin;
 
     const url =
-        `${baseUrl}/api/generate` +
+        `${baseUrl}/api/wallpaper` +
         `?type=life` +
         `&theme=${theme}` +
         `&lang=${lang}` +
         `&birth=${birthDate}` +
         `&lifespan=${lifespan}` +
         `&w=${resolution.w}` +
-        `&h=${resolution.h}`;
+        `&h=${resolution.h}` +
+        `&fs=50`;
 
     apiUrlInput.value = url;
 }

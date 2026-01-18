@@ -2,7 +2,7 @@
   "version": 2,
   "builds": [
     {
-      "src": "api/generate.py",
+      "src": "api/*.py",
       "use": "@vercel/python",
       "config": {
         "maxLambdaSize": "50mb"
@@ -15,12 +15,12 @@
   ],
   "routes": [
     {
+      "src": "/api/wallpaper",
+      "dest": "/api/wallpaper.py"
+    },
+    {
       "src": "/api/generate",
-      "dest": "/api/generate.py",
-      "headers": {
-        "Cache-Control": "no-cache, no-store, must-revalidate",
-        "X-Build-Time": "$now"
-      }
+      "dest": "/api/generate.py"
     },
     {
       "src": "/(.*)",
@@ -28,7 +28,7 @@
     }
   ],
   "functions": {
-    "api/generate.py": {
+    "api/*.py": {
       "memory": 1024,
       "maxDuration": 30
     }
