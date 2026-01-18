@@ -7,23 +7,27 @@ import os
 
 
 def load_font(size: int):
-    """Load font with fallback to default - prioritize fonts with Cyrillic support"""
+    """Load font with Cyrillic support"""
+    # Try to load TrueType fonts that support Cyrillic
     font_paths = [
-        "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",  # Linux/Vercel - Bold for better visibility
-        "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",  # Linux/Vercel
-        "/usr/share/fonts/truetype/liberation/LiberationSans-Bold.ttf",  # Alternative
-        "/System/Library/Fonts/Helvetica.ttc",  # macOS
-        "C:/Windows/Fonts/arial.ttf",  # Windows
+        "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
+        "/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf",
+        "C:/Windows/Fonts/arial.ttf",
     ]
 
     for path in font_paths:
         if os.path.exists(path):
             try:
-                return ImageFont.truetype(path, size)
+                font = ImageFont.truetype(path, size, encoding="unic")
+                return font
             except Exception:
-                continue
+                pass
 
-    return ImageFont.load_default()
+    # If no font loaded, try default with size
+    try:
+        return ImageFont.load_default()
+    except:
+        return None
 
 
 # =========================
@@ -100,21 +104,28 @@ def generate_life_calendar(
             draw.ellipse([cx - r, cy - r, cx + r, cy + r], fill=color)
 
     # ===== TEXT =====
-    main_font = load_font(int(h * 0.042))  # Main text: "ACT NOW" / "Действуй сейчас"
-    small_font = load_font(int(h * 0.026))  # Percentage text: "35.1% to 90"
+    # Use fixed pixel sizes based on iPhone screen height
+    # iPhone 15: h=2556 -> main=110px, small=70px
+    # iPhone 11: h=1792 -> main=77px, small=49px
+    main_size = max(60, min(140, int(w / 10.5)))  # Scale with width: ~112px for 1179px
+    small_size = max(40, min(90, int(w / 16.5)))   # Scale with width: ~71px for 1179px
+
+    main_font = load_font(main_size)
+    small_font = load_font(small_size)
 
 
 
 
 
+    # Text content based on language
     if lang == "ru":
-        line1 = "Действуй сейчас."
-        line2 = "У тебя ещё есть время."
-        percent_text = f"{percent:.1f}% пути пройдено"
+        line1 = "Действуй сейчас."  # Act now.
+        line2 = "У тебя ещё есть время."  # You still have time.
+        percent_text = f"{percent:.1f}% to {lifespan}"
     else:
         line1 = "ACT NOW"
         line2 = "YOU STILL HAVE TIME"
-        percent_text = f"{percent:.1f}% completed"
+        percent_text = f"{percent:.1f}% to {lifespan}"
 
     bw = draw.textbbox((0, 0), percent_text, font=small_font)
     draw.text(
@@ -228,7 +239,7 @@ class handler(BaseHTTPRequestHandler):
 
             self.send_response(200)
             self.send_header("Content-Type", "image/png")
-            self.send_header("Cache-Control", "public, max-age=3600")
+            self.send_header("Cache-Control", "no-cache, no-store, must-revalidate")  # Disable cache for testing
             self.send_header("Access-Control-Allow-Origin", "*")
             self.end_headers()
             self.wfile.write(image_bytes)
