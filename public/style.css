@@ -39,12 +39,13 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    gap: 24px;
+    gap: 12px;
     margin-bottom: -10px;
 }
 
 .header-left {
     flex: 1;
+    min-width: 0;
 }
 
 .logo-section {
@@ -55,7 +56,7 @@ body {
 }
 
 .logo-img {
-    width: 90px;
+    width: 75px;
     object-fit: contain;
 }
 
@@ -320,11 +321,11 @@ color: #9f9f9f;
 }
 
 .nav-arrow-left {
-    left: -15px;
+    left: -24px;
 }
 
 .nav-arrow-right {
-    right: -15px;
+    right: -24px;
 }
 
 
@@ -684,16 +685,30 @@ color: #9f9f9f;
 /* Responsive adjustments */
 @media (max-width: 480px) {
     .container {
-        padding: 24px 20px;
+        padding: 24px 16px;
     }
 
     .header {
-        flex-direction: row;     /* ✅ ВСЕГДА В РЯД */
+        flex-direction: row;
         align-items: flex-start;
+        gap: 8px;
     }
 
     .header-right {
-        align-items: center;   /* ✅ справа */
+        align-items: center;
+    }
+
+    .brand-name,
+    .brand-subtitle {
+        font-size: 22px;
+    }
+
+    .arrow-img {
+        height: 14px;
+    }
+
+    .logo-img {
+        width: 60px;
     }
 
     .preview-wrapper {
@@ -701,21 +716,21 @@ color: #9f9f9f;
     }
 
     .nav-arrow {
-        width: 36px;
-        height: 36px;
+        width: 32px;
+        height: 32px;
     }
 
     .nav-arrow img {
-        width: 20px;
-        height: 20px;
+        width: 18px;
+        height: 18px;
     }
 
     .nav-arrow-left {
-        left: -10px;
+        left: -16px;
     }
 
     .nav-arrow-right {
-        right: -10px;
+        right: -16px;
     }
 
     .modal-content {
