@@ -93,10 +93,10 @@ body {
 
 
 .description {
-    font-size: 10px;
+    font-size: 13px;
     font-weight: 700;
     color: #9F9F9F;
-    line-height: 1.5;
+    line-height: 1;
     letter-spacing: -0.6px;
     width: 210px;
 }
