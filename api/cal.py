@@ -84,20 +84,27 @@ def generate_life_calendar(birth_str, lifespan, w, h, theme, lang, font_size=0):
     img = Image.new("RGB", (w, h), bg)
     draw = ImageDraw.Draw(img)
 
-    # Grid
-    cols, rows = 52, lifespan
-    pad_top = int(h * 0.18)
+    # Grid - 55 circles in one row, smaller circles
+    cols, rows = 55, lifespan
+    pad_top = int(h * 0.20)
     pad_bot = int(h * 0.18)
-    pad_x = int(w * 0.08)
+    pad_x = int(w * 0.05)
 
     grid_w = w - pad_x * 2
     grid_h = h - pad_top - pad_bot
     cell = min(grid_w / cols, grid_h / rows)
-    gap = cell * 0.25
+    gap = cell * 0.35  # Bigger gap = smaller circles
     r = (cell - gap) / 2
 
     ox = (w - cols * cell) / 2
     oy = pad_top
+
+    # Draw red logo circle (mini logo) at top right
+    logo_radius = r * 1.5  # Make logo slightly bigger than grid circles
+    logo_x = w - pad_x - logo_radius * 2
+    logo_y = int(pad_top * 0.3)
+    draw.ellipse([logo_x - logo_radius, logo_y - logo_radius, 
+                  logo_x + logo_radius, logo_y + logo_radius], fill=(255, 77, 77))
 
     for row in range(rows):
         for col in range(cols):
