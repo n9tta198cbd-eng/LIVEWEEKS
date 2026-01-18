@@ -171,7 +171,7 @@ body {
 }
 
 .toggle-text-right {
-    right: 20px;
+    right: 12x;
 }
 
 .toggle-input:checked + .toggle-slider::before {
