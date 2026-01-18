@@ -87,7 +87,7 @@ const translations = {
         dayLabel: 'День',
         dateErrorInvalid: 'Неверная дата',
         dateErrorFuture: 'Дата не может быть в будущем',
-        automationInstruction: 'Откройте приложение Ярлыки → Автоматизация → Новый → Время дня → 6:00 → Повторять "Ежедневно" → "Запускать немедленно" → "Создать новый ярлык"',
+        automationInstruction: 'Откройте приложение Команды → Автоматизация → Новый → Время дня → 6:00 → Повторять "Ежедневно" → "Запускать немедленно" → "Создать новую команду"',
         shortcutInstruction: 'ДОБАВЬТЕ ЭТИ ДЕЙСТВИЯ:',
         action1Text: '3.1 "Получить содержимое URL" → вставьте URL:',
         action2Text: '3.2 "Установить фото обоев" → "Экран блокировки"',
@@ -110,9 +110,9 @@ function updateModalTranslations() {
     if (dayLabel) dayLabel.textContent = t.dayLabel;
     if (automationInstruction) {
         if (state.language === 'eng') {
-            automationInstruction.innerHTML = 'Open <a href="#" class="shortcuts-link">Shortcuts</a> app → Automation → New → Time of Day → 6:00 AM → Repeat "Daily" → "Run Immediately" → "Create New Shortcut"';
+            automationInstruction.innerHTML = 'Open <a href="shortcuts://" class="shortcuts-link">Shortcuts</a> app → Automation → New → Time of Day → 6:00 AM → Repeat "Daily" → "Run Immediately" → "Create New Shortcut"';
         } else {
-            automationInstruction.innerHTML = 'Откройте приложение <a href="#" class="shortcuts-link">Ярлыки</a> → Автоматизация → Новый → Время дня → 6:00 → Повторять "Ежедневно" → "Запускать немедленно" → "Создать новый ярлык"';
+            automationInstruction.innerHTML = 'Откройте приложение <a href="shortcuts://" class="shortcuts-link">Команды</a> → Автоматизация → Новый → Время дня → 6:00 → Повторять "Ежедневно" → "Запускать немедленно" → "Создать новую команду"';
         }
     }
     if (shortcutInstruction) shortcutInstruction.innerHTML = `<strong>${t.shortcutInstruction}</strong>`;
@@ -129,11 +129,16 @@ function updateModalTranslations() {
 
 // iPhone screen resolutions
 const iphoneResolutions = {
-    iphone15: { w: 1179, h: 2556 },
-    iphone14: { w: 1170, h: 2532 },
+    iphone13mini: { w: 1080, h: 2340 },
     iphone13: { w: 1170, h: 2532 },
-    iphone12: { w: 1170, h: 2532 },
-    iphone11: { w: 828, h: 1792 }
+    iphone13promax: { w: 1284, h: 2778 },
+    iphone15: { w: 1179, h: 2556 },
+    iphone15plus: { w: 1290, h: 2796 },
+    iphone16pro: { w: 1206, h: 2622 },
+    iphone16promax: { w: 1320, h: 2868 },
+    iphone17: { w: 1179, h: 2556 },
+    iphone17pro: { w: 1206, h: 2622 },
+    iphone17promax: { w: 1320, h: 2868 }
 };
 
 // Update API URL based on current settings
