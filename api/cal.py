@@ -7,13 +7,9 @@ from urllib.parse import urlparse, parse_qs
 import os
 
 # =========================
-# FONT LOADING (ONLY helvetica_light.otf)
+# FONT LOADING
 # =========================
-BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-FONT_PATH = os.path.join(BASE_DIR, "public", "fonts", "helvetica_light.otf")
-
-if not os.path.exists(FONT_PATH):
-    raise FileNotFoundError(f"Font not found: {FONT_PATH}")
+FONT_PATH = os.path.join(os.path.dirname(__file__), "font.otf")
 
 
 
