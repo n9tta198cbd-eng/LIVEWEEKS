@@ -100,8 +100,8 @@ def generate_life_calendar(
             draw.ellipse([cx - r, cy - r, cx + r, cy + r], fill=color)
 
     # ===== TEXT =====
-    main_font = load_font(int(h * 0.5))
-    small_font = load_font(int(h * 0.5))
+    main_font = load_font(int(h * 0.042))  # Main text: "ACT NOW" / "Действуй сейчас"
+    small_font = load_font(int(h * 0.026))  # Percentage text: "35.1% to 90"
 
 
 
