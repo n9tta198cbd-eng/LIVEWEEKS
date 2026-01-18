@@ -7,9 +7,11 @@ import os
 
 
 def load_font(size: int):
-    """Load font with fallback to default"""
+    """Load font with fallback to default - prioritize fonts with Cyrillic support"""
     font_paths = [
+        "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",  # Linux/Vercel - Bold for better visibility
         "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",  # Linux/Vercel
+        "/usr/share/fonts/truetype/liberation/LiberationSans-Bold.ttf",  # Alternative
         "/System/Library/Fonts/Helvetica.ttc",  # macOS
         "C:/Windows/Fonts/arial.ttf",  # Windows
     ]
@@ -18,7 +20,7 @@ def load_font(size: int):
         if os.path.exists(path):
             try:
                 return ImageFont.truetype(path, size)
-            except:
+            except Exception:
                 continue
 
     return ImageFont.load_default()
