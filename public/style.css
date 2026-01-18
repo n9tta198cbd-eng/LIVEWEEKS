@@ -153,14 +153,11 @@ body {
     background: linear-gradient(180deg, #d0d0d0 0%, #fcfcfc 100%);
 }
 
-.toggle-text-container {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    display: flex;
-    align-items: center;
-    z-index: 1;
-    pointer-events: none;
+.toggle-text-container{
+  position:absolute;
+  top:50%;
+  transform:translateY(-50%);
+  display:block; /* можно без flex */
 }
 
 .toggle-text-inner {
