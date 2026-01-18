@@ -1,18 +1,27 @@
 from datetime import date, datetime
 from PIL import Image, ImageDraw, ImageFont
 from io import BytesIO
-
-
-FONT_PATH = "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"
-FONT_PATH = "C:/Windows/Fonts/arial.ttf"
-
+from http.server import BaseHTTPRequestHandler
+from urllib.parse import urlparse, parse_qs
+import os
 
 
 def load_font(size: int):
-    try:
-        return ImageFont.truetype(FONT_PATH, size)
-    except:
-        return ImageFont.load_default()
+    """Load font with fallback to default"""
+    font_paths = [
+        "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",  # Linux/Vercel
+        "/System/Library/Fonts/Helvetica.ttc",  # macOS
+        "C:/Windows/Fonts/arial.ttf",  # Windows
+    ]
+
+    for path in font_paths:
+        if os.path.exists(path):
+            try:
+                return ImageFont.truetype(path, size)
+            except:
+                continue
+
+    return ImageFont.load_default()
 
 
 # =========================
@@ -202,3 +211,28 @@ def generate_image(params: dict) -> bytes:
         return generate_year_calendar(w, h)
 
     raise ValueError("Unknown calendar type")
+
+
+# =========================
+# VERCEL HANDLER
+# =========================
+class handler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        try:
+            parsed = urlparse(self.path)
+            params = parse_qs(parsed.query)
+
+            image_bytes = generate_image(params)
+
+            self.send_response(200)
+            self.send_header("Content-Type", "image/png")
+            self.send_header("Cache-Control", "public, max-age=3600")
+            self.send_header("Access-Control-Allow-Origin", "*")
+            self.end_headers()
+            self.wfile.write(image_bytes)
+
+        except Exception as e:
+            self.send_response(500)
+            self.send_header("Content-Type", "text/plain")
+            self.end_headers()
+            self.wfile.write(f"Error: {str(e)}".encode())
