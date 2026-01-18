@@ -144,8 +144,8 @@ body {
 .toggle-slider::before {
     content: '';
     position: absolute;
-    width: 21px;
-    height: 21px;
+    width: 25px;
+    height: 25px;
     border-radius: 50%;
     transition: transform 0.3s;
     z-index: 2;
@@ -163,7 +163,7 @@ body {
     z-index: 1;
     pointer-events: none;
     text-shadow: inset 0px 1px 1px 0 #000;
-    top: 2px;
+    top: -1px
 }
 
 .toggle-text-left {
@@ -171,7 +171,8 @@ body {
 }
 
 .toggle-text-right {
-    right: 12x;
+    right: 25px;
+
 }
 
 .toggle-input:checked + .toggle-slider::before {
