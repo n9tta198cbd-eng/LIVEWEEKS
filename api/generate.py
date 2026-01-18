@@ -8,7 +8,6 @@ import os
 
 def load_font(size: int):
     """Load font with Cyrillic support"""
-    # Try to load TrueType fonts that support Cyrillic
     font_paths = [
         "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
         "/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf",
@@ -18,16 +17,13 @@ def load_font(size: int):
     for path in font_paths:
         if os.path.exists(path):
             try:
-                font = ImageFont.truetype(path, size, encoding="unic")
-                return font
+                # DO NOT use encoding parameter - it breaks Cyrillic!
+                return ImageFont.truetype(path, size)
             except Exception:
-                pass
+                continue
 
-    # If no font loaded, try default with size
-    try:
-        return ImageFont.load_default()
-    except:
-        return None
+    # Fallback to default
+    return ImageFont.load_default()
 
 
 # =========================
