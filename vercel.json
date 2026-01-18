@@ -1,6 +1,3 @@
 {
-  "rewrites": [
-    { "source": "/api/wallpaper", "destination": "/api/wallpaper.py" },
-    { "source": "/api/generate", "destination": "/api/generate.py" }
-  ]
+  "version": 2
 }
