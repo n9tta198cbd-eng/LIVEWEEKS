@@ -100,11 +100,13 @@ def generate_life_calendar(
             draw.ellipse([cx - r, cy - r, cx + r, cy + r], fill=color)
 
     # ===== TEXT =====
-    # Larger font sizes for better visibility
+    # UPDATED: Large font sizes - Version 2.0
     # iPhone 15 (w=1179): main=168px, small=84px
     # iPhone 11 (w=828): main=118px, small=59px
-    main_size = max(80, min(200, int(w / 7)))     # Main text: ~168px for 1179px
-    small_size = max(50, min(120, int(w / 14)))   # Percentage: ~84px for 1179px
+    main_size = max(80, min(200, int(w / 7)))     # Main: ~168px for iPhone 15
+    small_size = max(50, min(120, int(w / 14)))   # Small: ~84px for iPhone 15
+
+    print(f"DEBUG: Font sizes - main={main_size}px, small={small_size}px, width={w}")  # Debug log
 
     main_font = load_font(main_size)
     small_font = load_font(small_size)
@@ -235,8 +237,11 @@ class handler(BaseHTTPRequestHandler):
 
             self.send_response(200)
             self.send_header("Content-Type", "image/png")
-            self.send_header("Cache-Control", "no-cache, no-store, must-revalidate")  # Disable cache for testing
+            self.send_header("Cache-Control", "no-cache, no-store, must-revalidate, max-age=0")
+            self.send_header("Pragma", "no-cache")
+            self.send_header("Expires", "0")
             self.send_header("Access-Control-Allow-Origin", "*")
+            self.send_header("X-Version", "2.0")  # Force new version
             self.end_headers()
             self.wfile.write(image_bytes)
 
