@@ -154,7 +154,7 @@ function updateApiUrl() {
     const baseUrl = window.location.origin;
 
     const url =
-        `${baseUrl}/api/wallpaper` +
+        `${baseUrl}/api/generate` +
         `?type=life` +
         `&theme=${theme}` +
         `&lang=${lang}` +

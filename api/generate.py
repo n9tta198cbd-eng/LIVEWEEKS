@@ -128,9 +128,9 @@ def generate_life_calendar(
 
     small_px = main_px // 2
 
-    # Clamp sizes to reasonable range
-    main_px = max(50, min(300, main_px))
-    small_px = max(30, min(150, small_px))
+    # Clamp sizes to reasonable range (v5 - fixed)
+    main_px = max(40, min(350, main_px))
+    small_px = max(25, min(175, small_px))
 
     # Create fonts with exact sizes
     main_font = get_font(main_px)
@@ -261,7 +261,7 @@ class handler(BaseHTTPRequestHandler):
             self.send_header("Cache-Control", "no-cache, no-store, must-revalidate")
             self.send_header("Access-Control-Allow-Origin", "*")
             self.send_header("X-Font-Path", str(FONT_PATH))  # Debug: show which font is used
-            self.send_header("X-Version", "4.0")
+            self.send_header("X-Version", "5.0-force")
             self.end_headers()
             self.wfile.write(image_bytes)
 
