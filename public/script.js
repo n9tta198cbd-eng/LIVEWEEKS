@@ -129,17 +129,32 @@ function updateApiUrl() {
     const year = state.birthYear || 2009;
     const month = String(state.birthMonth || 8).padStart(2, '0');
     const day = String(state.birthDay || 1).padStart(2, '0');
-    const birthDate = `${year}-${month}-${day}`;
-    const lifeDuration = state.lifeDuration || 90;
-    const model = state.iphoneModel || 'iphone15';
-    const resolution = iphoneResolutions[model] || iphoneResolutions.iphone15;
-    const theme = state.color; // 'black' or 'white'
 
-    // Use full URL with domain for Shortcuts compatibility
+    const birthDate = `${year}-${month}-${day}`;
+    const lifespan = state.lifeDuration || 90;
+
+    const model = state.iphoneModel || 'iphone15';
+    const resolution = iphoneResolutions[model];
+
+    const theme = state.color;      // black | white
+    const lang = state.language;    // eng | ru
+
     const baseUrl = window.location.origin;
-    const url = `${baseUrl}/api/generate?type=life&birth=${birthDate}&lifespan=${lifeDuration}&w=${resolution.w}&h=${resolution.h}&theme=${theme}`;
-    if (apiUrlInput) apiUrlInput.value = url;
+
+    const url =
+        `${baseUrl}/api/generate` +
+        `?type=life` +
+        `&theme=${theme}` +
+        `&lang=${lang}` +
+        `&birth=${birthDate}` +
+        `&lifespan=${lifespan}` +
+        `&w=${resolution.w}` +
+        `&h=${resolution.h}`;
+
+    apiUrlInput.value = url;
 }
+
+
 
 // Update UI based on state
 function updateUI() {

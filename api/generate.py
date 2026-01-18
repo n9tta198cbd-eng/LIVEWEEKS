@@ -1,390 +1,204 @@
-from http.server import BaseHTTPRequestHandler
-from urllib.parse import urlparse, parse_qs
-from datetime import date, datetime, timedelta
+from datetime import date, datetime
 from PIL import Image, ImageDraw, ImageFont
 from io import BytesIO
-import math
 
 
-def generate_life_calendar(birth_str: str, lifespan: int, w: int, h: int, theme: str = "black") -> bytes:
-    """Generate life calendar - each box = 1 week of life
+FONT_PATH = "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"
+FONT_PATH = "C:/Windows/Fonts/arial.ttf"
 
-    Args:
-        theme: "black" or "white" background
-    """
-    birth_date = datetime.strptime(birth_str, "%Y-%m-%d").date()
+
+
+def load_font(size: int):
+    try:
+        return ImageFont.truetype(FONT_PATH, size)
+    except:
+        return ImageFont.load_default()
+
+
+# =========================
+# LIFE CALENDAR
+# =========================
+def generate_life_calendar(
+    birth_str: str,
+    lifespan: int,
+    w: int,
+    h: int,
+    theme: str,
+    lang: str
+) -> bytes:
+
+    birth = datetime.strptime(birth_str, "%Y-%m-%d").date()
     today = date.today()
 
-    lived_days = (today - birth_date).days
+    lived_days = max(0, (today - birth).days)
     lived_weeks = lived_days // 7
-    total_weeks = lifespan * 52
+    total_weeks = int(lifespan * 365.2422 / 7)
 
-    # Calculate percentage
-    percentage = (lived_weeks / total_weeks) * 100 if total_weeks > 0 else 0
+    percent = (lived_weeks / total_weeks * 100) if total_weeks else 0
 
-    # Colors based on theme
-    if theme == "black":
-        bg_color = (0, 0, 0)  # Black background
-        lived_color = (255, 255, 255)  # White dots for lived weeks
-        future_color = (60, 60, 60)  # Dark gray for future weeks
-        current_color = (255, 77, 77)  # Red dot for current week
-        text_main = (217, 217, 217)  # #D9D9D9
-        text_secondary = (152, 152, 152)  # #989898
-    else:  # white/light theme
-        bg_color = (184, 184, 184)  # Gray background
-        lived_color = (100, 100, 100)  # Gray dots for lived weeks
-        future_color = (255, 255, 255)  # White dots for future weeks
-        current_color = (255, 77, 77)  # Red dot for current week
-        text_main = (80, 80, 80)  # Darker gray text
-        text_secondary = (120, 120, 120)  # Medium gray text
+    # ===== COLORS =====
+    if theme == "white":
+        bg = (230, 230, 230)
+        lived = (60, 60, 60)
+        future = (255, 255, 255)
+        current = (255, 77, 77)
+        text_main = (40, 40, 40)
+        text_secondary = (110, 110, 110)
+    else:
+        bg = (0, 0, 0)
+        lived = (255, 255, 255)
+        future = (50, 50, 50)
+        current = (255, 77, 77)
+        text_main = (230, 230, 230)
+        text_secondary = (150, 150, 150)
 
-    img = Image.new("RGB", (w, h), bg_color)
+    img = Image.new("RGB", (w, h), bg)
     draw = ImageDraw.Draw(img)
 
-    # Grid: 52 columns x lifespan rows
+    # ===== GRID =====
     cols = 52
     rows = lifespan
 
-    # Calculate grid dimensions (based on CSS: 434.95px x 680.6px for 428px width)
-    grid_width = w * 1.016  # 434.95 / 428
-    grid_height = h * 0.735  # 680.6 / 926
+    padding_top = int(h * 0.18)
+    padding_bottom = int(h * 0.18)
+    padding_x = int(w * 0.08)
 
-    # Start position (from CSS: top: 166.03px = 17.9% of 926px)
-    grid_start_y = h * 0.179
+    grid_w = w - padding_x * 2
+    grid_h = h - padding_top - padding_bottom
 
-    cell_w = grid_width / cols
-    cell_h = grid_height / rows
-    cell_size = min(cell_w, cell_h)
+    cell = min(grid_w / cols, grid_h / rows)
+    gap = cell * 0.25
+    r = (cell - gap) / 2
 
-    gap = cell_size * 0.25
-    dot_size = cell_size - gap
+    ox = (w - cols * cell) / 2
+    oy = padding_top
 
-    actual_grid_width = cols * cell_size
-    actual_grid_height = rows * cell_size
+    for y in range(rows):
+        for x in range(cols):
+            i = y * cols + x
+            cx = ox + x * cell + cell / 2
+            cy = oy + y * cell + cell / 2
 
-    # Center grid horizontally
-    offset_x = (w - actual_grid_width) / 2
-    offset_y = grid_start_y
-
-    # Draw weeks grid - circles
-    for year in range(rows):
-        for week in range(cols):
-            week_num = year * 52 + week
-            center_x = offset_x + week * cell_size + cell_size / 2
-            center_y = offset_y + year * cell_size + cell_size / 2
-            radius = dot_size / 2
-
-            # Determine color
-            if week_num == lived_weeks:
-                color = current_color  # Current week - RED
-            elif week_num < lived_weeks:
-                color = lived_color  # Lived weeks
+            if i < lived_weeks:
+                color = lived
+            elif i == lived_weeks:
+                color = current
             else:
-                color = future_color  # Future weeks
+                color = future
 
-            draw.ellipse([center_x - radius, center_y - radius,
-                         center_x + radius, center_y + radius], fill=color)
+            draw.ellipse([cx - r, cy - r, cx + r, cy + r], fill=color)
 
-    # Load fonts
-    try:
-        # Font sizes from CSS
-        main_font_size = int(w * 0.0366)  # 15.6854 / 428
-        small_font_size = int(w * 0.0236)  # 10.0835 / 428
-
-        main_font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", main_font_size)
-        small_font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", small_font_size)
-    except:
-        try:
-            main_font = ImageFont.truetype("arial.ttf", int(w * 0.0366))
-            small_font = ImageFont.truetype("arial.ttf", int(w * 0.0236))
-        except:
-            main_font = ImageFont.load_default()
-            small_font = ImageFont.load_default()
-
-    # Draw percentage text (from CSS: top: 799.3px = 86.3% of 926px)
-    percentage_text = f"{percentage:.1f}% to {lifespan}"
-    percentage_y = h * 0.863
-    bbox = draw.textbbox((0, 0), percentage_text, font=small_font)
-    percentage_x = (w - bbox[2]) / 2
-    draw.text((percentage_x, percentage_y), percentage_text, fill=text_secondary, font=small_font)
-
-    # Draw main text (from CSS: top: 830.54px = 89.6% of 926px)
-    main_text_line1 = "ACT NOW"
-    main_text_line2 = "YOU STILL HAVE TIME"
-    main_y = h * 0.896
-
-    # Draw first line
-    bbox1 = draw.textbbox((0, 0), main_text_line1, font=main_font)
-    line1_x = (w - bbox1[2]) / 2
-    draw.text((line1_x, main_y), main_text_line1, fill=text_main, font=main_font)
-
-    # Draw second line
-    bbox2 = draw.textbbox((0, 0), main_text_line2, font=main_font)
-    line2_x = (w - bbox2[2]) / 2
-    line2_y = main_y + (bbox1[3] - bbox1[1])
-    draw.text((line2_x, line2_y), main_text_line2, fill=text_main, font=main_font)
-
-    buffer = BytesIO()
-    img.save(buffer, format="PNG", optimize=True)
-    buffer.seek(0)
-    return buffer.getvalue()
+    # ===== TEXT =====
+    main_font = load_font(int(h * 0.03))
+    small_font = load_font(int(h * 0.025))
 
 
+
+
+
+    if lang == "ru":
+        line1 = "ДЕЙСТВУЙ СЕЙЧАС,"
+        line2 = "У ТЕБЯ ЕЩЕ ЕСТЬ ВРЕМЯ"
+        percent_text = f"{percent:.1f}% пути пройдено"
+    else:
+        line1 = "ACT NOW"
+        line2 = "YOU STILL HAVE TIME"
+        percent_text = f"{percent:.1f}% completed"
+
+    bw = draw.textbbox((0, 0), percent_text, font=small_font)
+    draw.text(
+        ((w - bw[2]) / 2, h * 0.82),
+        percent_text,
+        text_secondary,
+        small_font
+    )
+
+    b1 = draw.textbbox((0, 0), line1, font=main_font)
+    b2 = draw.textbbox((0, 0), line2, font=main_font)
+
+    y = h * 0.865
+    draw.text(((w - b1[2]) / 2, y), line1, text_main, main_font)
+    draw.text(((w - b2[2]) / 2, y + b1[3] + 4), line2, text_main, main_font)
+
+    buf = BytesIO()
+    img.save(buf, "PNG", optimize=True)
+    return buf.getvalue()
+
+
+# =========================
+# YEAR CALENDAR
+# =========================
 def generate_year_calendar(w: int, h: int) -> bytes:
-    """Generate year calendar - each box = 1 day of current year"""
     today = date.today()
-    year_start = date(today.year, 1, 1)
-    year_end = date(today.year, 12, 31)
+    start = date(today.year, 1, 1)
+    total_days = (date(today.year, 12, 31) - start).days + 1
+    passed = (today - start).days
 
-    total_days = (year_end - year_start).days + 1
-    elapsed_days = (today - year_start).days
-
-    bg_color = (10, 10, 10)
-    passed_color = (255, 255, 255)
-    future_color = (50, 50, 50)
-    text_color = (120, 120, 120)
-
-    img = Image.new("RGB", (w, h), bg_color)
+    img = Image.new("RGB", (w, h), (10, 10, 10))
     draw = ImageDraw.Draw(img)
 
-    # Padding for iPhone clock at top
-    clock_padding = h * 0.12
-    title_area = h * 0.06
-    padding_x = w * 0.08
-    padding_bottom = h * 0.08
+    cols = 53
+    rows = 7
 
-    grid_start_y = clock_padding + title_area
-    grid_width = w - (2 * padding_x)
-    grid_height = h - grid_start_y - padding_bottom
+    padding_top = int(h * 0.18)
+    padding_bottom = int(h * 0.12)
+    padding_x = int(w * 0.08)
 
-    # Grid layout for year (weeks as columns, 7 rows for days)
-    cols = 53  # weeks in year
-    rows = 7   # days in week
+    grid_w = w - padding_x * 2
+    grid_h = h - padding_top - padding_bottom
 
-    cell_w = grid_width / cols
-    cell_h = grid_height / rows
-    cell_size = min(cell_w, cell_h)
+    cell = min(grid_w / cols, grid_h / rows)
+    r = (cell * 0.7) / 2
 
-    gap = cell_size * 0.3
-    dot_size = cell_size - gap
+    ox = (w - cols * cell) / 2
+    oy = padding_top
 
-    actual_grid_width = cols * cell_size
-    actual_grid_height = rows * cell_size
-    offset_x = (w - actual_grid_width) / 2
-    offset_y = grid_start_y + (grid_height - actual_grid_height) / 2
+    for d in range(total_days):
+        week = d // 7
+        day = d % 7
 
-    # Load fonts
-    try:
-        title_font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", int(w * 0.05))
-        small_font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", int(w * 0.022))
-    except:
-        try:
-            title_font = ImageFont.truetype("arial.ttf", int(w * 0.05))
-            small_font = ImageFont.truetype("arial.ttf", int(w * 0.022))
-        except:
-            title_font = ImageFont.load_default()
-            small_font = title_font
+        cx = ox + week * cell + cell / 2
+        cy = oy + day * cell + cell / 2
 
-    # Draw year
-    year_text = str(today.year)
-    bbox = draw.textbbox((0, 0), year_text, font=title_font)
-    draw.text(((w - bbox[2]) / 2, clock_padding + (title_area - bbox[3]) / 2), year_text, fill=(255, 255, 255), font=title_font)
+        color = (255, 255, 255) if d < passed else (60, 60, 60)
+        draw.ellipse([cx - r, cy - r, cx + r, cy + r], fill=color)
 
-    # Draw days left at bottom
-    days_left = total_days - elapsed_days - 1
-    days_text = f"{days_left} days left"
-    bbox2 = draw.textbbox((0, 0), days_text, font=small_font)
-    draw.text(((w - bbox2[2]) / 2, h - padding_bottom * 0.5), days_text, fill=text_color, font=small_font)
-
-    # Draw days (column = week number, row = day of week) - circles
-    for day_num in range(total_days):
-        day_date = year_start + timedelta(days=day_num)
-        week_num = day_date.isocalendar()[1] - 1
-        day_of_week = day_date.weekday()  # 0=Monday
-
-        if week_num >= cols:
-            week_num = cols - 1
-
-        center_x = offset_x + week_num * cell_size + cell_size / 2
-        center_y = offset_y + day_of_week * cell_size + cell_size / 2
-        radius = dot_size / 2
-
-        if day_num < elapsed_days:
-            color = passed_color
-        else:
-            color = future_color
-
-        draw.ellipse([center_x - radius, center_y - radius,
-                     center_x + radius, center_y + radius], fill=color)
-
-    # Draw logo at bottom center
-    logo_size = int(w * 0.035)
-    logo_x = w / 2
-    logo_y = h - padding_bottom * 0.4
-    draw.ellipse([logo_x - logo_size/2, logo_y - logo_size/2,
-                  logo_x + logo_size/2, logo_y + logo_size/2],
-                 outline=(80, 80, 80), width=int(logo_size * 0.05))
-    dot_r = logo_size * 0.12
-    draw.ellipse([logo_x + logo_size*0.18 - dot_r, logo_y - logo_size*0.18 - dot_r,
-                  logo_x + logo_size*0.18 + dot_r, logo_y - logo_size*0.18 + dot_r],
-                 fill=(80, 80, 80))
-
-    buffer = BytesIO()
-    img.save(buffer, format="PNG", optimize=True)
-    buffer.seek(0)
-    return buffer.getvalue()
+    buf = BytesIO()
+    img.save(buf, "PNG", optimize=True)
+    return buf.getvalue()
 
 
-def generate_goal_calendar(goal: str, start_str: str, deadline_str: str, w: int, h: int) -> bytes:
-    """Generate goal calendar - countdown to deadline"""
-    start_date = datetime.strptime(start_str, "%Y-%m-%d").date()
-    deadline_date = datetime.strptime(deadline_str, "%Y-%m-%d").date()
-    today = date.today()
+# =========================
+# API ENTRY POINT
+# =========================
+def generate_image(params: dict) -> bytes:
+    def get(name, default=None):
+        return params.get(name, [default])[0]
 
-    total_days = (deadline_date - start_date).days
-    if total_days <= 0:
-        total_days = 30
+    cal_type = get("type", "life")
+    theme = get("theme", "black")
+    lang = get("lang", "en")
 
-    elapsed_days = max(0, min((today - start_date).days, total_days))
-    days_left = max(0, total_days - elapsed_days)
+    w = min(5000, max(300, int(get("w", 1179))))
+    h = min(5000, max(300, int(get("h", 2556))))
 
-    bg_color = (10, 10, 10)
-    passed_color = (255, 255, 255)
-    future_color = (50, 50, 50)
-    text_color = (120, 120, 120)
+    if cal_type == "life":
+        birth = get("birth")
+        if not birth:
+            raise ValueError("birth is required (YYYY-MM-DD)")
 
-    img = Image.new("RGB", (w, h), bg_color)
-    draw = ImageDraw.Draw(img)
+        lifespan = int(get("lifespan", 90))
 
-    # Padding for iPhone clock at top
-    clock_padding = h * 0.12
-    title_area = h * 0.06
-    padding_x = w * 0.08
-    padding_bottom = h * 0.08
+        return generate_life_calendar(
+            birth,
+            lifespan,
+            w,
+            h,
+            theme,
+            lang
+        )
 
-    grid_start_y = clock_padding + title_area
-    grid_width = w - (2 * padding_x)
-    grid_height = h - grid_start_y - padding_bottom
+    if cal_type == "year":
+        return generate_year_calendar(w, h)
 
-    # Calculate optimal grid
-    aspect = grid_width / grid_height
-    cols = max(7, int(math.sqrt(total_days * aspect)))
-    rows = math.ceil(total_days / cols)
-
-    cell_w = grid_width / cols
-    cell_h = grid_height / rows
-    cell_size = min(cell_w, cell_h)
-
-    gap = cell_size * 0.3
-    dot_size = cell_size - gap
-
-    actual_grid_width = cols * cell_size
-    actual_grid_height = rows * cell_size
-    offset_x = (w - actual_grid_width) / 2
-    offset_y = grid_start_y + (grid_height - actual_grid_height) / 2
-
-    # Load fonts
-    try:
-        title_font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", int(w * 0.035))
-        small_font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", int(w * 0.022))
-    except:
-        try:
-            title_font = ImageFont.truetype("arial.ttf", int(w * 0.035))
-            small_font = ImageFont.truetype("arial.ttf", int(w * 0.022))
-        except:
-            title_font = ImageFont.load_default()
-            small_font = title_font
-
-    # Goal name
-    bbox = draw.textbbox((0, 0), goal, font=title_font)
-    draw.text(((w - bbox[2]) / 2, clock_padding + (title_area - bbox[3]) / 2), goal, fill=(255, 255, 255), font=title_font)
-
-    # Days left at bottom
-    days_text = f"{days_left} days to go"
-    bbox2 = draw.textbbox((0, 0), days_text, font=small_font)
-    draw.text(((w - bbox2[2]) / 2, h - padding_bottom * 0.5), days_text, fill=text_color, font=small_font)
-
-    # Draw days - circles
-    for i in range(total_days):
-        row = i // cols
-        col = i % cols
-        center_x = offset_x + col * cell_size + cell_size / 2
-        center_y = offset_y + row * cell_size + cell_size / 2
-        radius = dot_size / 2
-
-        if i < elapsed_days:
-            color = passed_color
-        else:
-            color = future_color
-
-        draw.ellipse([center_x - radius, center_y - radius,
-                     center_x + radius, center_y + radius], fill=color)
-
-    # Draw logo at bottom center
-    logo_size = int(w * 0.035)
-    logo_x = w / 2
-    logo_y = h - padding_bottom * 0.4
-    draw.ellipse([logo_x - logo_size/2, logo_y - logo_size/2,
-                  logo_x + logo_size/2, logo_y + logo_size/2],
-                 outline=(80, 80, 80), width=int(logo_size * 0.05))
-    dot_r = logo_size * 0.12
-    draw.ellipse([logo_x + logo_size*0.18 - dot_r, logo_y - logo_size*0.18 - dot_r,
-                  logo_x + logo_size*0.18 + dot_r, logo_y - logo_size*0.18 + dot_r],
-                 fill=(80, 80, 80))
-
-    buffer = BytesIO()
-    img.save(buffer, format="PNG", optimize=True)
-    buffer.seek(0)
-    return buffer.getvalue()
-
-
-class handler(BaseHTTPRequestHandler):
-    def do_GET(self):
-        parsed = urlparse(self.path)
-        params = parse_qs(parsed.query)
-
-        try:
-            cal_type = params.get('type', ['goal'])[0]
-            w = int(params.get('w', ['1179'])[0])
-            h = int(params.get('h', ['2556'])[0])
-            w = max(100, min(5000, w))
-            h = max(100, min(5000, h))
-
-            if cal_type == 'life':
-                birth = params.get('birth', [''])[0]
-                lifespan = int(params.get('lifespan', ['90'])[0])
-                theme = params.get('theme', ['black'])[0]  # black or white
-                if not birth:
-                    raise ValueError("Missing birth parameter")
-                image_bytes = generate_life_calendar(birth, lifespan, w, h, theme)
-
-            elif cal_type == 'year':
-                image_bytes = generate_year_calendar(w, h)
-
-            elif cal_type == 'goal':
-                goal = params.get('goal', ['My Goal'])[0]
-                start = params.get('start', [''])[0]
-                deadline = params.get('deadline', [''])[0]
-                if not start or not deadline:
-                    raise ValueError("Missing start or deadline")
-                image_bytes = generate_goal_calendar(goal, start, deadline, w, h)
-
-            else:
-                raise ValueError(f"Unknown type: {cal_type}")
-
-            self.send_response(200)
-            self.send_header('Content-Type', 'image/png')
-            self.send_header('Cache-Control', 'no-cache, no-store, must-revalidate')
-            self.end_headers()
-            self.wfile.write(image_bytes)
-
-        except ValueError as e:
-            self.send_response(400)
-            self.send_header('Content-Type', 'text/plain')
-            self.end_headers()
-            self.wfile.write(f'Error: {str(e)}'.encode())
-        except Exception as e:
-            self.send_response(500)
-            self.send_header('Content-Type', 'text/plain')
-            self.end_headers()
-            self.wfile.write(f'Server error: {str(e)}'.encode())
+    raise ValueError("Unknown calendar type")
