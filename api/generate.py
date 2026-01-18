@@ -7,23 +7,39 @@ import os
 
 
 def load_font(size: int):
-    """Load font with Cyrillic support"""
+    """Load font with Cyrillic support - MUST be TrueType!"""
     font_paths = [
         "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
         "/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf",
+        "/usr/share/fonts/truetype/liberation/LiberationSans-Bold.ttf",
+        "/usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf",
         "C:/Windows/Fonts/arial.ttf",
     ]
 
+    last_error = None
     for path in font_paths:
-        if os.path.exists(path):
-            try:
-                # DO NOT use encoding parameter - it breaks Cyrillic!
-                return ImageFont.truetype(path, size)
-            except Exception:
-                continue
+        try:
+            if os.path.exists(path):
+                font = ImageFont.truetype(path, size)
+                print(f"SUCCESS: Loaded font {path} at size {size}px")
+                return font
+        except Exception as e:
+            last_error = e
+            print(f"FAILED: Could not load {path}: {e}")
+            continue
 
-    # Fallback to default
-    return ImageFont.load_default()
+    # CRITICAL: If no TrueType font loads, we have a problem!
+    print(f"CRITICAL ERROR: No TrueType font loaded! Last error: {last_error}")
+    print(f"Requested size: {size}px")
+
+    # Try to create a basic font as last resort
+    try:
+        # Try default TrueType without path
+        return ImageFont.truetype("DejaVuSans.ttf", size)
+    except:
+        # This will have WRONG size but at least won't crash
+        print("FALLBACK: Using default bitmap font (SIZE WILL BE IGNORED!)")
+        return ImageFont.load_default()
 
 
 # =========================
@@ -100,16 +116,22 @@ def generate_life_calendar(
             draw.ellipse([cx - r, cy - r, cx + r, cy + r], fill=color)
 
     # ===== TEXT =====
-    # UPDATED: Large font sizes - Version 2.0
-    # iPhone 15 (w=1179): main=168px, small=84px
-    # iPhone 11 (w=828): main=118px, small=59px
-    main_size = max(80, min(200, int(w / 7)))     # Main: ~168px for iPhone 15
-    small_size = max(50, min(120, int(w / 14)))   # Small: ~84px for iPhone 15
+    # LARGE FONTS - Version 3.0
+    print(f"========== TEXT RENDERING START ==========")
+    print(f"Screen dimensions: {w}x{h}")
 
-    print(f"DEBUG: Font sizes - main={main_size}px, small={small_size}px, width={w}")  # Debug log
+    # Calculate sizes
+    main_size = max(80, min(200, int(w / 7)))     # ~168px for iPhone 15
+    small_size = max(50, min(120, int(w / 14)))   # ~84px for iPhone 15
 
+    print(f"Calculated sizes: main={main_size}px, small={small_size}px")
+
+    # Load fonts
     main_font = load_font(main_size)
     small_font = load_font(small_size)
+
+    print(f"Font objects created: main_font={main_font}, small_font={small_font}")
+    print(f"==========================================")
 
 
 
@@ -137,6 +159,10 @@ def generate_life_calendar(
     b2 = draw.textbbox((0, 0), line2, font=main_font)
 
     y = h * 0.865
+
+    print(f"Drawing text line1: '{line1}' at y={y}, bbox={b1}")
+    print(f"Drawing text line2: '{line2}' at y={y + b1[3] + 4}, bbox={b2}")
+
     draw.text(((w - b1[2]) / 2, y), line1, text_main, main_font)
     draw.text(((w - b2[2]) / 2, y + b1[3] + 4), line2, text_main, main_font)
 
@@ -241,7 +267,7 @@ class handler(BaseHTTPRequestHandler):
             self.send_header("Pragma", "no-cache")
             self.send_header("Expires", "0")
             self.send_header("Access-Control-Allow-Origin", "*")
-            self.send_header("X-Version", "2.0")  # Force new version
+            self.send_header("X-Version", "3.0-debug")  # Force new version with debug
             self.end_headers()
             self.wfile.write(image_bytes)
 
