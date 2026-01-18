@@ -7,25 +7,14 @@ from urllib.parse import urlparse, parse_qs
 import os
 
 # =========================
-# FONT LOADING
+# FONT LOADING (ONLY helvetica_light.otf)
 # =========================
-FONT_PATH = None
+BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+FONT_PATH = os.path.join(BASE_DIR, "public", "fonts", "helvetica_light.otf")
 
-# Font in same folder as this script (works on Vercel)
-SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-BUNDLED_FONT = os.path.join(SCRIPT_DIR, "helvetica.otf")
+if not os.path.exists(FONT_PATH):
+    raise FileNotFoundError(f"Font not found: {FONT_PATH}")
 
-POSSIBLE_FONTS = [
-    BUNDLED_FONT,  # First priority: bundled font in api/
-    "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
-    "/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf",
-    "C:/Windows/Fonts/arial.ttf",
-]
-
-for fp in POSSIBLE_FONTS:
-    if os.path.exists(fp):
-        FONT_PATH = fp
-        break
 
 
 def get_font(size_px: int):
@@ -138,6 +127,7 @@ def generate_image(params):
     def get(name, default=None):
         val = params.get(name, [default])
         return val[0] if val else default
+
 
     theme = get("theme", "black")
     lang = get("lang", "en")
