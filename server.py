@@ -27,9 +27,9 @@ class Handler(SimpleHTTPRequestHandler):
         parsed = urlparse(self.path)
 
         # ===== API =====
-        if parsed.path == "/api/generate":
+        if parsed.path in ["/api/generate", "/api/cal"]:
             try:
-                from generate import generate_image
+                from cal import generate_image
 
                 params = parse_qs(parsed.query)
                 result = generate_image(params)
@@ -52,5 +52,5 @@ class Handler(SimpleHTTPRequestHandler):
 if __name__ == "__main__":
     os.chdir(PUBLIC_DIR)
     server = HTTPServer(("localhost", PORT), Handler)
-    print(f"Server running → http://localhost:{PORT}")
+    print(f"Server running: http://localhost:{PORT}")
     server.serve_forever()

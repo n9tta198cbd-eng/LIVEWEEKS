@@ -14,7 +14,6 @@ FONT_PATH = None
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 
 LOCAL_FONTS = [
-    os.path.join(BASE_DIR, "public", "fonts", "helvetica_cyr_boldoblique.ttf"),
     os.path.join(BASE_DIR, "public", "fonts", "helvetica_regular.otf"),
     os.path.join(BASE_DIR, "public", "fonts", "helvetica_bold.otf"),
 ]
@@ -123,7 +122,7 @@ def generate_life_calendar(birth_str, lifespan, w, h, theme, lang, font_size=0):
     # Text
     if lang == "ru":
         line1 = "Действуй сейчас."
-        line2 = "У тебя ещё есть время."
+        line2 = "У тебя еще есть время."
     else:
         line1 = "ACT NOW"
         line2 = "YOU STILL HAVE TIME"
