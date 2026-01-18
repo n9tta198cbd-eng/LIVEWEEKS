@@ -5,6 +5,7 @@ from io import BytesIO
 from http.server import BaseHTTPRequestHandler
 from urllib.parse import urlparse, parse_qs
 import os
+import sys
 
 # =========================
 # FONT LOADING - NEW MECHANISM
@@ -14,9 +15,11 @@ import os
 FONT_PATH = None
 POSSIBLE_FONTS = [
     "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
+    "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
     "/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf",
     "/usr/share/fonts/truetype/ubuntu/Ubuntu-R.ttf",
     "/usr/share/fonts/truetype/noto/NotoSans-Regular.ttf",
+    "/System/Library/Fonts/Arial.ttf",
     "C:/Windows/Fonts/arial.ttf",
     "C:/Windows/Fonts/Arial.ttf",
 ]
@@ -26,16 +29,28 @@ for fp in POSSIBLE_FONTS:
         FONT_PATH = fp
         break
 
+# Log which font was found
+DEBUG_FONT_INFO = f"Font found: {FONT_PATH if FONT_PATH else 'NONE - using default'}"
+
 
 def get_font(size_px: int):
     """Create font with exact pixel size"""
     if FONT_PATH:
-        return ImageFont.truetype(FONT_PATH, size_px)
-    else:
-        # Fallback: try to load default font with size
         try:
-            return ImageFont.load_default(size=size_px)
-        except:
+            return ImageFont.truetype(FONT_PATH, size_px)
+        except Exception as e:
+            # If font loading fails, use Pillow's default with size
+            try:
+                return ImageFont.load_default(size=max(size_px // 8, 10))
+            except:
+                return ImageFont.load_default()
+    else:
+        # Use Pillow's built-in default font with size parameter
+        try:
+            # Pillow 10.1.0+ supports size parameter in load_default()
+            return ImageFont.load_default(size=max(size_px // 8, 10))
+        except TypeError:
+            # Fallback for older Pillow versions
             return ImageFont.load_default()
 
 
@@ -265,7 +280,8 @@ class handler(BaseHTTPRequestHandler):
             self.send_header("Content-Type", "image/png")
             self.send_header("Cache-Control", "no-cache, no-store, must-revalidate")
             self.send_header("Access-Control-Allow-Origin", "*")
-            self.send_header("X-Font-Path", str(FONT_PATH))  # Debug: show which font is used
+            self.send_header("X-Font-Path", str(FONT_PATH))
+            self.send_header("X-Font-Info", DEBUG_FONT_INFO)
             self.send_header("X-Version", "4.0")
             self.end_headers()
             self.wfile.write(image_bytes)
