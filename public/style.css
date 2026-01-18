@@ -55,7 +55,7 @@ body {
 }
 
 .logo-img {
-    width: 75px;
+    width: 90px;
     object-fit: contain;
 }
 
@@ -65,17 +65,17 @@ body {
 }
 
 .brand-name {
-    font-size: 21px;
+    font-size: 26px;
     font-weight: 900;
     color: #9F9F9F;
-    line-height: 1.2;
+    line-height: 1;
 }
 
 .brand-subtitle {
-    font-size: 21px;
+    font-size: 26px;
     font-weight: 900;
     color: #9F9F9F;
-    line-height: 1.2;
+    line-height: 1;
 }
 
 .arrow-img {
