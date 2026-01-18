@@ -153,17 +153,22 @@ body {
     background: linear-gradient(180deg, #d0d0d0 0%, #fcfcfc 100%);
 }
 
-.toggle-text-left,
-.toggle-text-right {
+.toggle-text-container {
     position: absolute;
+    top: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    z-index: 1;
+    pointer-events: none;
+}
+
+.toggle-text-inner {
     font-size: 16px;
     font-weight: 700;
     color: #9B9B9B;
     transition: color 0.3s;
-    z-index: 1;
-    pointer-events: none;
     text-shadow: inset 0px 1px 1px 0 #000;
-    top: -1px
 }
 
 .toggle-text-left {
@@ -171,8 +176,7 @@ body {
 }
 
 .toggle-text-right {
-    right: 25px;
-
+    right: 20px;
 }
 
 .toggle-input:checked + .toggle-slider::before {
@@ -183,19 +187,19 @@ body {
     background: #C5C5C5;
 }
 
-.toggle-input:checked + .toggle-slider .toggle-text-left {
+.toggle-input:checked + .toggle-slider .toggle-text-left .toggle-text-inner {
     color: #9F9F9F;
 }
 
-.toggle-input:checked + .toggle-slider .toggle-text-right {
+.toggle-input:checked + .toggle-slider .toggle-text-right .toggle-text-inner {
     color: transparent;
 }
 
-.toggle-input:not(:checked) + .toggle-slider .toggle-text-left {
+.toggle-input:not(:checked) + .toggle-slider .toggle-text-left .toggle-text-inner {
     color: transparent;
 }
 
-.toggle-input:not(:checked) + .toggle-slider .toggle-text-right {
+.toggle-input:not(:checked) + .toggle-slider .toggle-text-right .toggle-text-inner {
     color: #9B9B9B;
 }
 
