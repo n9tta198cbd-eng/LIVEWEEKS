@@ -130,15 +130,15 @@ body {
 .toggle-slider {
     width: 75px;
     height: 25px;
-    background: var(--color-secondary);
-    border-radius: var(--radius-full);
+    background: #C5C5C5;
+    border-radius: 14px;
     position: relative;
-    transition: all var(--duration-normal) var(--ease-standard);
+    transition: all 0.3s;
     display: flex;
     align-items: center;
-    padding: var(--space-2);
-    box-shadow: var(--shadow-sm);
-    overflow: hidden;
+    padding: 2px;
+    box-shadow: 0 1px 1px 1px #e4e4e4;
+    
 }
 
 .toggle-slider::before {
@@ -147,11 +147,10 @@ body {
     width: 25px;
     height: 25px;
     border-radius: 50%;
-    transition: transform var(--duration-normal) var(--ease-standard);
+    transition: transform 0.3s;
     z-index: 2;
-    box-shadow: var(--shadow-md), var(--shadow-inset-sm);
-    background: var(--color-surface);
-    left: var(--space-2);
+    box-shadow: -1px 0 6px 0 rgba(0, 0, 0, 0.3), inset 0 0 0 1px rgba(255, 255, 255, 0.6), inset 0 2px 0 0 rgba(255, 255, 255, 0.6);
+    background: linear-gradient(180deg, #d0d0d0 0%, #fcfcfc 100%);
 }
 
 .toggle-text-container{
