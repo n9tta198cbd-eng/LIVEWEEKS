@@ -108,17 +108,17 @@ def generate_life_calendar(birth_str, lifespan, w, h, theme, lang, font_size=0):
 
     actual_grid_bottom = oy + used_h
 
-    # =========================
+     # =========================
     # LOGO
     # =========================
     logo_img = None
-    for p in [
-        os.path.join(os.path.dirname(__file__), "public", "img", "logo_mini.png"),
-        "public/img/logo_mini.png",
-    ]:
-        if os.path.exists(p):
-            logo_img = Image.open(p).convert("RGBA")
-            break
+
+    BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    logo_path = os.path.join(BASE_DIR, "public", "img", "logo_mini.png")
+
+    if os.path.exists(logo_path):
+        logo_img = Image.open(logo_path).convert("RGBA")
+
 
     # =========================
     # DRAW GRID
