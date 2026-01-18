@@ -200,6 +200,13 @@ body {
     color: #9B9B9B;
 }
 
+/* iOS Safari: чуть поднимаем текст ENG/RU внутри тумблера */
+@supports (-webkit-touch-callout: none) {
+    .toggle-text-container {
+        transform: translateY(-55%);
+    }
+}
+
 /* Color Selection */
 .color-selection {
     display: flex;
@@ -798,3 +805,4 @@ color: #9f9f9f;
     display: flex;
     align-items: center;
 }
+
