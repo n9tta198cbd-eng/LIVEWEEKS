@@ -15,6 +15,8 @@ FONT_PATH = None
 POSSIBLE_FONTS = [
     "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
     "/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf",
+    "/usr/share/fonts/truetype/ubuntu/Ubuntu-R.ttf",
+    "/usr/share/fonts/truetype/noto/NotoSans-Regular.ttf",
     "C:/Windows/Fonts/arial.ttf",
     "C:/Windows/Fonts/Arial.ttf",
 ]
@@ -30,8 +32,11 @@ def get_font(size_px: int):
     if FONT_PATH:
         return ImageFont.truetype(FONT_PATH, size_px)
     else:
-        # Fallback - will not scale but won't crash
-        return ImageFont.load_default()
+        # Fallback: try to load default font with size
+        try:
+            return ImageFont.load_default(size=size_px)
+        except:
+            return ImageFont.load_default()
 
 
 def draw_centered_text(draw, text, y_pos, font, color, width):
