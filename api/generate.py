@@ -100,11 +100,11 @@ def generate_life_calendar(
             draw.ellipse([cx - r, cy - r, cx + r, cy + r], fill=color)
 
     # ===== TEXT =====
-    # Use fixed pixel sizes based on iPhone screen height
-    # iPhone 15: h=2556 -> main=110px, small=70px
-    # iPhone 11: h=1792 -> main=77px, small=49px
-    main_size = max(60, min(140, int(w / 10.5)))  # Scale with width: ~112px for 1179px
-    small_size = max(40, min(90, int(w / 16.5)))   # Scale with width: ~71px for 1179px
+    # Larger font sizes for better visibility
+    # iPhone 15 (w=1179): main=168px, small=84px
+    # iPhone 11 (w=828): main=118px, small=59px
+    main_size = max(80, min(200, int(w / 7)))     # Main text: ~168px for 1179px
+    small_size = max(50, min(120, int(w / 14)))   # Percentage: ~84px for 1179px
 
     main_font = load_font(main_size)
     small_font = load_font(small_size)
