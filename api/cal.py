@@ -34,6 +34,28 @@ def draw_centered_text(draw, text, y_pos, font, color, width):
     return text_height
 
 
+def draw_centered_text_two_colors(draw, text_part1, text_part2, y_pos, font, color1, color2, width):
+    """Draw text with two colors, centered as a whole"""
+    full_text = text_part1 + text_part2
+    bbox = draw.textbbox((0, 0), full_text, font=font)
+    text_width = bbox[2] - bbox[0]
+    text_height = bbox[3] - bbox[1]
+    x_start = (width - text_width) // 2
+    
+    # Draw first part
+    draw.text((x_start, y_pos), text_part1, fill=color1, font=font)
+    
+    # Calculate position for second part
+    bbox_part1 = draw.textbbox((0, 0), text_part1, font=font)
+    part1_width = bbox_part1[2] - bbox_part1[0]
+    x_part2 = x_start + part1_width
+    
+    # Draw second part
+    draw.text((x_part2, y_pos), text_part2, fill=color2, font=font)
+    
+    return text_height
+
+
 def generate_life_calendar(birth_str, lifespan, w, h, theme, lang, font_size=0):
     birth = datetime.strptime(birth_str, "%Y-%m-%d").date()
     today = date.today()
@@ -45,19 +67,19 @@ def generate_life_calendar(birth_str, lifespan, w, h, theme, lang, font_size=0):
 
     # Colors
     if theme == "white":
-        bg = (230, 230, 230)
-        lived_color = (60, 60, 60)
-        future_color = (255, 255, 255)
+        bg = (185, 185, 185)
+        lived_color = (152, 152, 152)
+        future_color = (217, 217, 217)
         current_color = (255, 77, 77)
-        text_main = (40, 40, 40)
-        text_sec = (110, 110, 110)
+        text_main = (217, 217, 217)
+        text_sec = (217, 217, 217)
     else:
         bg = (0, 0, 0)
-        lived_color = (255, 255, 255)
-        future_color = (50, 50, 50)
+        lived_color = (152, 152, 152)
+        future_color = (217, 217, 217)
         current_color = (255, 77, 77)
-        text_main = (230, 230, 230)
-        text_sec = (150, 150, 150)
+        text_main = (217, 217, 217)
+        text_sec = (217, 217, 217)
 
     img = Image.new("RGB", (w, h), bg)
     draw = ImageDraw.Draw(img)
@@ -112,10 +134,12 @@ def generate_life_calendar(birth_str, lifespan, w, h, theme, lang, font_size=0):
         line1 = "ACT NOW"
         line2 = "YOU STILL HAVE TIME"
 
-    percent_text = f"{percent:.1f}% TO {lifespan}"
+    percent_part1 = f"{percent:.1f}%"
+    percent_part2 = f" to {lifespan}"
 
     y_percent = int(h * 0.82)
-    draw_centered_text(draw, percent_text, y_percent, small_font, text_sec, w)
+    draw_centered_text_two_colors(draw, percent_part1, percent_part2, y_percent, small_font, 
+                                   (152, 152, 152), text_sec, w)
 
     y_main = int(h * 0.865)
     h1 = draw_centered_text(draw, line1, y_main, main_font, text_main, w)
