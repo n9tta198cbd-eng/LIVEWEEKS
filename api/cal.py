@@ -143,7 +143,7 @@ def generate_life_calendar(birth_str, lifespan, w, h, theme, lang, font_size=0):
     # TEXT DRAW
     # =========================
     line1 = "ДЕЙСТВУЙ СЕЙЧАС" if lang == "ru" else "ACT NOW"
-    line2 = "ВРЕМЯ ЕЩЕ ЕСТЬ" if lang == "ru" else "YOU STILL HAVE TIME"
+    line2 = "У ТЕБЯ ЕЩЕ ЕСТЬ ВРЕМЯ" if lang == "ru" else "YOU STILL HAVE TIME"
 
     y_percent = actual_grid_bottom + PERCENT_GAP
     draw_centered_text_two_colors(

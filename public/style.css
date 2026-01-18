@@ -163,7 +163,7 @@ body {
     z-index: 1;
     pointer-events: none;
     text-shadow: inset 0px 1px 1px 0 #000;
-    top: 3px;
+    top: 2px;
 }
 
 .toggle-text-left {
