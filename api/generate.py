@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from datetime import date, datetime
 from PIL import Image, ImageDraw, ImageFont
 from io import BytesIO
@@ -5,41 +6,42 @@ from http.server import BaseHTTPRequestHandler
 from urllib.parse import urlparse, parse_qs
 import os
 
+# =========================
+# FONT LOADING - NEW MECHANISM
+# =========================
 
-def load_font(size: int):
-    """Load font with Cyrillic support - MUST be TrueType!"""
-    font_paths = [
-        "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
-        "/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf",
-        "/usr/share/fonts/truetype/liberation/LiberationSans-Bold.ttf",
-        "/usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf",
-        "C:/Windows/Fonts/arial.ttf",
-    ]
+# Find available font path ONCE at module load
+FONT_PATH = None
+POSSIBLE_FONTS = [
+    "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
+    "/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf",
+    "C:/Windows/Fonts/arial.ttf",
+    "C:/Windows/Fonts/Arial.ttf",
+]
 
-    last_error = None
-    for path in font_paths:
-        try:
-            if os.path.exists(path):
-                font = ImageFont.truetype(path, size)
-                print(f"SUCCESS: Loaded font {path} at size {size}px")
-                return font
-        except Exception as e:
-            last_error = e
-            print(f"FAILED: Could not load {path}: {e}")
-            continue
+for fp in POSSIBLE_FONTS:
+    if os.path.exists(fp):
+        FONT_PATH = fp
+        break
 
-    # CRITICAL: If no TrueType font loads, we have a problem!
-    print(f"CRITICAL ERROR: No TrueType font loaded! Last error: {last_error}")
-    print(f"Requested size: {size}px")
 
-    # Try to create a basic font as last resort
-    try:
-        # Try default TrueType without path
-        return ImageFont.truetype("DejaVuSans.ttf", size)
-    except:
-        # This will have WRONG size but at least won't crash
-        print("FALLBACK: Using default bitmap font (SIZE WILL BE IGNORED!)")
+def get_font(size_px: int):
+    """Create font with exact pixel size"""
+    if FONT_PATH:
+        return ImageFont.truetype(FONT_PATH, size_px)
+    else:
+        # Fallback - will not scale but won't crash
         return ImageFont.load_default()
+
+
+def draw_centered_text(draw, text, y_pos, font, color, width):
+    """Draw text centered horizontally"""
+    bbox = draw.textbbox((0, 0), text, font=font)
+    text_width = bbox[2] - bbox[0]
+    text_height = bbox[3] - bbox[1]
+    x = (width - text_width) // 2
+    draw.text((x, y_pos), text, fill=color, font=font)
+    return text_height
 
 
 # =========================
@@ -51,7 +53,8 @@ def generate_life_calendar(
     w: int,
     h: int,
     theme: str,
-    lang: str
+    lang: str,
+    font_size: int = 0  # NEW: explicit font size parameter
 ) -> bytes:
 
     birth = datetime.strptime(birth_str, "%Y-%m-%d").date()
@@ -66,18 +69,18 @@ def generate_life_calendar(
     # ===== COLORS =====
     if theme == "white":
         bg = (230, 230, 230)
-        lived = (60, 60, 60)
-        future = (255, 255, 255)
-        current = (255, 77, 77)
-        text_main = (40, 40, 40)
-        text_secondary = (110, 110, 110)
+        lived_color = (60, 60, 60)
+        future_color = (255, 255, 255)
+        current_color = (255, 77, 77)
+        text_main_color = (40, 40, 40)
+        text_secondary_color = (110, 110, 110)
     else:
         bg = (0, 0, 0)
-        lived = (255, 255, 255)
-        future = (50, 50, 50)
-        current = (255, 77, 77)
-        text_main = (230, 230, 230)
-        text_secondary = (150, 150, 150)
+        lived_color = (255, 255, 255)
+        future_color = (50, 50, 50)
+        current_color = (255, 77, 77)
+        text_main_color = (230, 230, 230)
+        text_secondary_color = (150, 150, 150)
 
     img = Image.new("RGB", (w, h), bg)
     draw = ImageDraw.Draw(img)
@@ -100,72 +103,59 @@ def generate_life_calendar(
     ox = (w - cols * cell) / 2
     oy = padding_top
 
-    for y in range(rows):
-        for x in range(cols):
-            i = y * cols + x
-            cx = ox + x * cell + cell / 2
-            cy = oy + y * cell + cell / 2
+    for row in range(rows):
+        for col in range(cols):
+            i = row * cols + col
+            cx = ox + col * cell + cell / 2
+            cy = oy + row * cell + cell / 2
 
             if i < lived_weeks:
-                color = lived
+                dot_color = lived_color
             elif i == lived_weeks:
-                color = current
+                dot_color = current_color
             else:
-                color = future
+                dot_color = future_color
 
-            draw.ellipse([cx - r, cy - r, cx + r, cy + r], fill=color)
+            draw.ellipse([cx - r, cy - r, cx + r, cy + r], fill=dot_color)
 
-    # ===== TEXT =====
-    # LARGE FONTS - Version 3.0
-    print(f"========== TEXT RENDERING START ==========")
-    print(f"Screen dimensions: {w}x{h}")
+    # ===== TEXT - NEW MECHANISM =====
+    # Calculate font size: use parameter or calculate from width
+    if font_size > 0:
+        main_px = font_size
+    else:
+        # Default: width / 7 = ~168px for iPhone 15 (1179px width)
+        main_px = w // 7
 
-    # Calculate sizes
-    main_size = max(80, min(200, int(w / 7)))     # ~168px for iPhone 15
-    small_size = max(50, min(120, int(w / 14)))   # ~84px for iPhone 15
+    small_px = main_px // 2
 
-    print(f"Calculated sizes: main={main_size}px, small={small_size}px")
+    # Clamp sizes to reasonable range
+    main_px = max(50, min(300, main_px))
+    small_px = max(30, min(150, small_px))
 
-    # Load fonts
-    main_font = load_font(main_size)
-    small_font = load_font(small_size)
+    # Create fonts with exact sizes
+    main_font = get_font(main_px)
+    small_font = get_font(small_px)
 
-    print(f"Font objects created: main_font={main_font}, small_font={small_font}")
-    print(f"==========================================")
-
-
-
-
-
-    # Text content based on language
+    # Text content
     if lang == "ru":
-        line1 = "Действуй сейчас."  # Act now.
-        line2 = "У тебя ещё есть время."  # You still have time.
-        percent_text = f"{percent:.1f}% to {lifespan}"
+        line1 = "Действуй сейчас."
+        line2 = "У тебя ещё есть время."
     else:
         line1 = "ACT NOW"
         line2 = "YOU STILL HAVE TIME"
-        percent_text = f"{percent:.1f}% to {lifespan}"
 
-    bw = draw.textbbox((0, 0), percent_text, font=small_font)
-    draw.text(
-        ((w - bw[2]) / 2, h * 0.82),
-        percent_text,
-        text_secondary,
-        small_font
-    )
+    percent_text = f"{percent:.1f}% to {lifespan}"
 
-    b1 = draw.textbbox((0, 0), line1, font=main_font)
-    b2 = draw.textbbox((0, 0), line2, font=main_font)
+    # Draw percentage text
+    y_percent = int(h * 0.82)
+    draw_centered_text(draw, percent_text, y_percent, small_font, text_secondary_color, w)
 
-    y = h * 0.865
+    # Draw main text lines
+    y_main = int(h * 0.865)
+    line1_height = draw_centered_text(draw, line1, y_main, main_font, text_main_color, w)
+    draw_centered_text(draw, line2, y_main + line1_height + 10, main_font, text_main_color, w)
 
-    print(f"Drawing text line1: '{line1}' at y={y}, bbox={b1}")
-    print(f"Drawing text line2: '{line2}' at y={y + b1[3] + 4}, bbox={b2}")
-
-    draw.text(((w - b1[2]) / 2, y), line1, text_main, main_font)
-    draw.text(((w - b2[2]) / 2, y + b1[3] + 4), line2, text_main, main_font)
-
+    # Save
     buf = BytesIO()
     img.save(buf, "PNG", optimize=True)
     return buf.getvalue()
@@ -219,7 +209,8 @@ def generate_year_calendar(w: int, h: int) -> bytes:
 # =========================
 def generate_image(params: dict) -> bytes:
     def get(name, default=None):
-        return params.get(name, [default])[0]
+        val = params.get(name, [default])
+        return val[0] if val else default
 
     cal_type = get("type", "life")
     theme = get("theme", "black")
@@ -227,6 +218,9 @@ def generate_image(params: dict) -> bytes:
 
     w = min(5000, max(300, int(get("w", 1179))))
     h = min(5000, max(300, int(get("h", 2556))))
+
+    # NEW: Allow font size override via URL parameter
+    font_size = int(get("fs", 0))
 
     if cal_type == "life":
         birth = get("birth")
@@ -241,7 +235,8 @@ def generate_image(params: dict) -> bytes:
             w,
             h,
             theme,
-            lang
+            lang,
+            font_size
         )
 
     if cal_type == "year":
@@ -263,11 +258,10 @@ class handler(BaseHTTPRequestHandler):
 
             self.send_response(200)
             self.send_header("Content-Type", "image/png")
-            self.send_header("Cache-Control", "no-cache, no-store, must-revalidate, max-age=0")
-            self.send_header("Pragma", "no-cache")
-            self.send_header("Expires", "0")
+            self.send_header("Cache-Control", "no-cache, no-store, must-revalidate")
             self.send_header("Access-Control-Allow-Origin", "*")
-            self.send_header("X-Version", "3.0-debug")  # Force new version with debug
+            self.send_header("X-Font-Path", str(FONT_PATH))  # Debug: show which font is used
+            self.send_header("X-Version", "4.0")
             self.end_headers()
             self.wfile.write(image_bytes)
 
