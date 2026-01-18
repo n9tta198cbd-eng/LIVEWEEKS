@@ -1,36 +1,6 @@
 {
-  "version": 2,
-  "builds": [
-    {
-      "src": "api/*.py",
-      "use": "@vercel/python",
-      "config": {
-        "maxLambdaSize": "50mb"
-      }
-    },
-    {
-      "src": "public/**",
-      "use": "@vercel/static"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/api/wallpaper",
-      "dest": "/api/wallpaper.py"
-    },
-    {
-      "src": "/api/generate",
-      "dest": "/api/generate.py"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/public/$1"
-    }
-  ],
-  "functions": {
-    "api/*.py": {
-      "memory": 1024,
-      "maxDuration": 30
-    }
-  }
+  "rewrites": [
+    { "source": "/api/wallpaper", "destination": "/api/wallpaper.py" },
+    { "source": "/api/generate", "destination": "/api/generate.py" }
+  ]
 }
