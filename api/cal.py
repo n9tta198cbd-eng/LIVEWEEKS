@@ -108,13 +108,11 @@ def generate_life_calendar(birth_str, lifespan, w, h, theme, lang, font_size=0):
 
     actual_grid_bottom = oy + used_h
 
-     # =========================
+    # =========================
     # LOGO
     # =========================
     logo_img = None
-
-    BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    logo_path = os.path.join(BASE_DIR, "public", "img", "logo_mini.png")
+    logo_path = os.path.join(os.path.dirname(__file__), "logo_mini.png")
 
     if os.path.exists(logo_path):
         logo_img = Image.open(logo_path).convert("RGBA")
