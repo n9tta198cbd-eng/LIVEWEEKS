@@ -79,11 +79,11 @@ body {
 }
 
 .arrow-img {
-    height: 5px;
+    height: 14px;
     width: auto;
     display: inline;
     vertical-align: middle;
-    padding: 0 3px;
+    padding: 0 0px;
 }
 
 .class_top_header{
