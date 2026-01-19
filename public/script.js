@@ -187,13 +187,13 @@ function updateUI() {
     } else {
         colorWhite.classList.add('selected');
         colorBlack.classList.remove('selected');
-        colorLabel.textContent = state.language === 'eng' ? 'White wallpaper' : 'Белые обои';
+        colorLabel.textContent = state.language === 'eng' ? 'Gray wallpaper' : 'Серые обои';
     }
     
     // Update button text
     const buttonText = state.language === 'eng' 
         ? `CREATE ${state.color.toUpperCase()} WALLPAPER`
-        : `СОЗДАТЬ ${state.color === 'black' ? 'ЧЕРНЫЕ' : 'БЕЛЫЕ'} ОБОИ`;
+        : `СОЗДАТЬ ${state.color === 'black' ? 'ЧЕРНЫЕ' : 'СЕРЫЕ'} ОБОИ`;
     generateBtn.textContent = buttonText;
     
     // Update description text
@@ -224,14 +224,14 @@ function updateColorOnly() {
         colorWhite.classList.add('selected');
         colorBlack.classList.remove('selected');
         colorLabel.textContent = state.language === 'eng'
-            ? 'White wallpaper'
-            : 'Белые обои';
+            ? 'Gray wallpaper'
+            : 'Серые обои';
     }
 
     // Update button text
     generateBtn.textContent = state.language === 'eng'
         ? `CREATE ${state.color.toUpperCase()} WALLPAPER`
-        : `СОЗДАТЬ ${state.color === 'black' ? 'ЧЕРНЫЕ' : 'БЕЛЫЕ'} ОБОИ`;
+        : `СОЗДАТЬ ${state.color === 'black' ? 'ЧЕРНЫЕ' : 'СЕРЫЕ'} ОБОИ`;
 
     // Update wrapper background
     const wrapper = document.getElementById('preview-button-wrapper');

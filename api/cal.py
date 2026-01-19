@@ -61,8 +61,8 @@ def generate_life_calendar(birth_str, lifespan, w, h, theme, lang, font_size=0):
     # TEXT SETUP
     # =========================
     base_px = font_size if font_size > 0 else max(30, min(150, int(w * 0.042)))
-    # Для русского текста используем чуть меньший размер, чтобы визуально был как английский
-    main_px = int(base_px * 0.92) if lang == "ru" else base_px
+    # Для русского текста уменьшаем весь текстовый блок в 1.3 раза
+    main_px = int(base_px * 0.92 / 1.3) if lang == "ru" else base_px
     small_px = int(main_px * 0.6)
 
     main_font = get_font(main_px)
