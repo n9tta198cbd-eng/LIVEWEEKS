@@ -66,8 +66,6 @@ def generate_life_calendar(birth_str, lifespan, w, h, theme, lang, font_size=0):
     main_font = get_font(main_px)
     small_font = get_font(small_px)
 
-    percent_h = small_font.getbbox("100.0% to 90")[3]
-
     # =========================
     # FIXED LAYOUT
     # =========================
@@ -117,6 +115,12 @@ def generate_life_calendar(birth_str, lifespan, w, h, theme, lang, font_size=0):
     if os.path.exists(logo_path):
         logo_img = Image.open(logo_path).convert("RGBA")
 
+    # Логотип для текста
+    logo_text_img = None
+    logo_text_path = os.path.join(os.path.dirname(__file__), "logo_text.png")
+    if os.path.exists(logo_text_path):
+        logo_text_img = Image.open(logo_text_path).convert("RGBA")
+
 
     # =========================
     # DRAW GRID
@@ -142,8 +146,8 @@ def generate_life_calendar(birth_str, lifespan, w, h, theme, lang, font_size=0):
     # =========================
     # TEXT DRAW
     # =========================
-    line1 = "ДЕЙСТВУЙ СЕЙЧАС" if lang == "ru" else "ACT NOW"
-    line2 = "У ТЕБЯ ЕЩЕ ЕСТЬ ВРЕМЯ" if lang == "ru" else "YOU STILL HAVE TIME"
+    text_left = "ДЕЙСТВУЙ" if lang == "ru" else "ACT"
+    text_right = "У ТЕБЯ ЕЩЁ ЕСТЬ ВРЕМЯ." if lang == "ru" else "YOU STILL HAVE TIME."
 
     y_percent = actual_grid_bottom + PERCENT_GAP
     draw_centered_text_two_colors(
@@ -157,17 +161,64 @@ def generate_life_calendar(birth_str, lifespan, w, h, theme, lang, font_size=0):
         w,
     )
 
-    LINE_SPACING = int(main_px * 0.25)  # межстрочный интервал
+    # =========================
+    # THREE BLOCK TEXT WITH LOGO
+    # =========================
+    # Загружаем логотип для текста
+    logo_text_size = int(main_px * 1.2)  # размер логотипа примерно как высота текста
 
-    h1 = draw_centered_text(draw, line1, y_main, main_font, text_color, w)
-    draw_centered_text(
-        draw,
-        line2,
-        y_main + h1 + LINE_SPACING,
-        main_font,
-        text_color,
-        w
-)
+    # Вычисляем размеры текстов
+    bbox_left = draw.textbbox((0, 0), text_left, font=main_font)
+    text_left_w = bbox_left[2] - bbox_left[0]
+    text_left_h = bbox_left[3] - bbox_left[1]
+
+    bbox_right = draw.textbbox((0, 0), text_right, font=main_font)
+    text_right_w = bbox_right[2] - bbox_right[0]
+
+    # Общая ширина композиции
+    LOGO_MARGIN = int(main_px * 0.8)  # отступ между текстом и логотипом
+    total_width = text_left_w + LOGO_MARGIN + logo_text_size + LOGO_MARGIN + text_right_w
+
+    # Стартовая позиция для центрирования всей композиции
+    start_x = (w - total_width) // 2
+
+    # Рисуем левый текст (выравнивание вправо)
+    draw.text((start_x, y_main), text_left, fill=text_color, font=main_font)
+
+    # Позиция для логотипа
+    logo_x = start_x + text_left_w + LOGO_MARGIN
+    logo_y = y_main + (text_left_h - logo_text_size) // 2  # центрируем по вертикали относительно текста
+
+    # Рисуем логотип
+    logo_rendered = None
+
+    # Загружаем PNG логотип для текста
+    if logo_text_img:
+        logo_resized = logo_text_img.resize((logo_text_size, logo_text_size), Image.Resampling.LANCZOS)
+        # Меняем цвет логотипа на цвет текста
+        logo_colored = Image.new("RGBA", logo_resized.size)
+        for x in range(logo_resized.width):
+            for y in range(logo_resized.height):
+                _, _, _, a = logo_resized.getpixel((x, y))
+                if a > 0:  # если пиксель не прозрачный
+                    logo_colored.putpixel((x, y), (*text_color, a))
+                else:
+                    logo_colored.putpixel((x, y), (0, 0, 0, 0))
+        logo_rendered = logo_colored
+
+    # Вставляем логотип
+    if logo_rendered:
+        img.paste(logo_rendered, (int(logo_x), int(logo_y)), logo_rendered)
+    else:
+        # Если логотипа нет, рисуем заглушку (круг)
+        cx = logo_x + logo_text_size // 2
+        cy = logo_y + logo_text_size // 2
+        r_circle = logo_text_size // 2
+        draw.ellipse([cx - r_circle, cy - r_circle, cx + r_circle, cy + r_circle], fill=text_color)
+
+    # Рисуем правый текст (выравнивание влево)
+    right_x = logo_x + logo_text_size + LOGO_MARGIN
+    draw.text((right_x, y_main), text_right, fill=text_color, font=main_font)
 
 
     buf = BytesIO()
