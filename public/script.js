@@ -56,8 +56,8 @@ function updatePreview() {
 // Translations
 const translations = {
     eng: {
-        modalTitle: 'Life Calendar',
-        modalDescription: 'Visualize your entire life in weeks. Each box represents one week of your life.',
+        modalTitle: '0-90 calendar',
+        modalDescription: '',
         section1Title: 'Configure',
         section2Title: 'Create Automation',
         section3Title: 'Create Shortcut',
@@ -75,8 +75,8 @@ const translations = {
         importantNote: 'Important: In "Set Wallpaper Photo", tap arrow → disable "Crop to Subject" and "Show Preview".'
     },
     ru: {
-        modalTitle: 'Календарь жизни',
-        modalDescription: 'Визуализируйте всю свою жизнь по неделям. Каждый квадрат представляет одну неделю вашей жизни.',
+        modalTitle: '0-90 календарь',
+        modalDescription: '',
         section1Title: 'Настройка',
         section2Title: 'Создать автоматизацию',
         section3Title: 'Команды',
