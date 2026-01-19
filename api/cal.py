@@ -60,7 +60,9 @@ def generate_life_calendar(birth_str, lifespan, w, h, theme, lang, font_size=0):
     # =========================
     # TEXT SETUP
     # =========================
-    main_px = font_size if font_size > 0 else max(30, min(150, int(w * 0.042)))
+    base_px = font_size if font_size > 0 else max(30, min(150, int(w * 0.042)))
+    # Для русского текста используем чуть меньший размер, чтобы визуально был как английский
+    main_px = int(base_px * 0.92) if lang == "ru" else base_px
     small_px = int(main_px * 0.6)
 
     main_font = get_font(main_px)
@@ -173,7 +175,11 @@ def generate_life_calendar(birth_str, lifespan, w, h, theme, lang, font_size=0):
     # =========================
     # THREE BLOCK TEXT WITH LOGO (2 LINES EACH SIDE)
     # =========================
-    LINE_SPACING = int(main_px * 0.2)  # межстрочный интервал
+    # Отдельные настройки интерльяжа для русского и английского
+    if lang == "ru":
+        LINE_SPACING = int(main_px * 0.05)  # межстрочный интервал для русского
+    else:
+        LINE_SPACING = int(main_px * 0.16)  # межстрочный интервал для английского
 
     # Вычисляем размеры текстов
     bbox_left_1 = draw.textbbox((0, 0), text_left_1, font=main_font)
@@ -198,11 +204,11 @@ def generate_life_calendar(birth_str, lifespan, w, h, theme, lang, font_size=0):
     # Высота текстового блока (2 строки)
     text_block_h = text_left_1_h + LINE_SPACING + text_left_2_h
 
-    # Размер логотипа - по высоте текстового блока
+    # Размер логотипа
     logo_text_size = int(text_block_h)
 
     # Отступ между текстом и логотипом (плотно)
-    LOGO_MARGIN = int(main_px * 0.5)
+    LOGO_MARGIN = int(main_px * 0.12)
 
     # Общая ширина композиции
     total_width = max_left_w + LOGO_MARGIN + logo_text_size + LOGO_MARGIN + max_right_w
@@ -219,7 +225,11 @@ def generate_life_calendar(birth_str, lifespan, w, h, theme, lang, font_size=0):
 
     # === РИСУЕМ ЛОГОТИП ===
     logo_x = start_x + max_left_w + LOGO_MARGIN
-    logo_y = y_main  # выравниваем по верхней линии текста
+    # Опускаем логотип чуть ниже для лучшего центрирования
+    # Для русского поднимаем выше (меньший процент)
+    logo_offset_percent = 0.10 if lang == "ru" else 0.15
+    logo_offset = int(text_block_h * logo_offset_percent)
+    logo_y = y_main + logo_offset
 
     logo_rendered = None
 
