@@ -52,7 +52,7 @@ def generate_life_calendar(birth_str, lifespan, w, h, theme, lang, font_size=0):
     lived_color = (152, 152, 152)
     future_color = (217, 217, 217)
     current_color = (255, 77, 77)
-    text_color = (255, 255, 255)
+    text_color = (217, 217, 217)
 
     img = Image.new("RGB", (w, h), bg)
     draw = ImageDraw.Draw(img)
@@ -60,13 +60,13 @@ def generate_life_calendar(birth_str, lifespan, w, h, theme, lang, font_size=0):
     # =========================
     # TEXT SETUP
     # =========================
-    base_px = font_size if font_size > 0 else max(30, min(150, int(w * 0.042)))
-    # Для русского текста уменьшаем весь текстовый блок в 1.3 раза
-    main_px = int(base_px * 0.92 / 1.3) if lang == "ru" else base_px
+    main_px = font_size if font_size > 0 else max(30, min(150, int(w * 0.042)))
     small_px = int(main_px * 0.6)
 
     main_font = get_font(main_px)
     small_font = get_font(small_px)
+
+    percent_h = small_font.getbbox("100.0% to 90")[3]
 
     # =========================
     # FIXED LAYOUT
@@ -117,12 +117,6 @@ def generate_life_calendar(birth_str, lifespan, w, h, theme, lang, font_size=0):
     if os.path.exists(logo_path):
         logo_img = Image.open(logo_path).convert("RGBA")
 
-    # Логотип для текста
-    logo_text_img = None
-    logo_text_path = os.path.join(os.path.dirname(__file__), "logo_text.png")
-    if os.path.exists(logo_text_path):
-        logo_text_img = Image.open(logo_text_path).convert("RGBA")
-
 
     # =========================
     # DRAW GRID
@@ -148,17 +142,8 @@ def generate_life_calendar(birth_str, lifespan, w, h, theme, lang, font_size=0):
     # =========================
     # TEXT DRAW
     # =========================
-    # Тексты в два ряда
-    if lang == "ru":
-        text_left_1 = "ДЕЙСТВУЙ"
-        text_left_2 = "СЕЙЧАС."
-        text_right_1 = "У ТЕБЯ ЕЩЁ"
-        text_right_2 = "ЕСТЬ ВРЕМЯ."
-    else:
-        text_left_1 = "ACT"
-        text_left_2 = "NOW."
-        text_right_1 = "YOU STILL"
-        text_right_2 = "HAVE TIME."
+    line1 = "ДЕЙСТВУЙ СЕЙЧАС" if lang == "ru" else "ACT NOW"
+    line2 = "У ТЕБЯ ЕЩЕ ЕСТЬ ВРЕМЯ" if lang == "ru" else "YOU STILL HAVE TIME"
 
     y_percent = actual_grid_bottom + PERCENT_GAP
     draw_centered_text_two_colors(
@@ -172,96 +157,17 @@ def generate_life_calendar(birth_str, lifespan, w, h, theme, lang, font_size=0):
         w,
     )
 
-    # =========================
-    # THREE BLOCK TEXT WITH LOGO (2 LINES EACH SIDE)
-    # =========================
-    # Отдельные настройки интерльяжа для русского и английского
-    if lang == "ru":
-        LINE_SPACING = int(main_px * 0.01)  # межстрочный интервал для русского
-    else:
-        LINE_SPACING = int(main_px * 0.16)  # межстрочный интервал для английского
+    LINE_SPACING = int(main_px * 0.25)  # межстрочный интервал
 
-    # Вычисляем размеры текстов
-    bbox_left_1 = draw.textbbox((0, 0), text_left_1, font=main_font)
-    text_left_1_w = bbox_left_1[2] - bbox_left_1[0]
-    text_left_1_h = bbox_left_1[3] - bbox_left_1[1]
-
-    bbox_left_2 = draw.textbbox((0, 0), text_left_2, font=main_font)
-    text_left_2_w = bbox_left_2[2] - bbox_left_2[0]
-    text_left_2_h = bbox_left_2[3] - bbox_left_2[1]
-
-    bbox_right_1 = draw.textbbox((0, 0), text_right_1, font=main_font)
-    text_right_1_w = bbox_right_1[2] - bbox_right_1[0]
-    text_right_1_h = bbox_right_1[3] - bbox_right_1[1]
-
-    bbox_right_2 = draw.textbbox((0, 0), text_right_2, font=main_font)
-    text_right_2_w = bbox_right_2[2] - bbox_right_2[0]
-
-    # Максимальные ширины для выравнивания
-    max_left_w = max(text_left_1_w, text_left_2_w)
-    max_right_w = max(text_right_1_w, text_right_2_w)
-
-    # Высота текстового блока (2 строки)
-    text_block_h = text_left_1_h + LINE_SPACING + text_left_2_h
-
-    # Размер логотипа
-    logo_text_size = int(text_block_h)
-
-    # Отступ между текстом и логотипом (плотно)
-    LOGO_MARGIN = int(main_px * 0.12)
-
-    # Общая ширина композиции
-    total_width = max_left_w + LOGO_MARGIN + logo_text_size + LOGO_MARGIN + max_right_w
-
-    # Стартовая позиция для центрирования всей композиции
-    start_x = (w - total_width) // 2
-
-    # === РИСУЕМ ЛЕВЫЙ ТЕКСТ (выравнивание вправо) ===
-    left_1_x = start_x + max_left_w - text_left_1_w
-    left_2_x = start_x + max_left_w - text_left_2_w
-
-    draw.text((left_1_x, y_main), text_left_1, fill=text_color, font=main_font)
-    draw.text((left_2_x, y_main + text_left_1_h + LINE_SPACING), text_left_2, fill=text_color, font=main_font)
-
-    # === РИСУЕМ ЛОГОТИП ===
-    logo_x = start_x + max_left_w + LOGO_MARGIN
-    # Опускаем логотип чуть ниже для лучшего центрирования
-    # Для русского поднимаем выше (меньший процент)
-    logo_offset_percent = 0.10 if lang == "ru" else 0.15
-    logo_offset = int(text_block_h * logo_offset_percent)
-    logo_y = y_main + logo_offset
-
-    logo_rendered = None
-
-    # Загружаем PNG логотип для текста
-    if logo_text_img:
-        logo_resized = logo_text_img.resize((logo_text_size, logo_text_size), Image.Resampling.LANCZOS)
-        # Меняем цвет логотипа на цвет текста
-        logo_colored = Image.new("RGBA", logo_resized.size)
-        for x in range(logo_resized.width):
-            for y in range(logo_resized.height):
-                _, _, _, a = logo_resized.getpixel((x, y))
-                if a > 0:  # если пиксель не прозрачный
-                    logo_colored.putpixel((x, y), (*text_color, a))
-                else:
-                    logo_colored.putpixel((x, y), (0, 0, 0, 0))
-        logo_rendered = logo_colored
-
-    # Вставляем логотип
-    if logo_rendered:
-        img.paste(logo_rendered, (int(logo_x), int(logo_y)), logo_rendered)
-    else:
-        # Если логотипа нет, рисуем заглушку (круг)
-        cx = logo_x + logo_text_size // 2
-        cy = logo_y + logo_text_size // 2
-        r_circle = logo_text_size // 2
-        draw.ellipse([cx - r_circle, cy - r_circle, cx + r_circle, cy + r_circle], fill=text_color)
-
-    # === РИСУЕМ ПРАВЫЙ ТЕКСТ (выравнивание влево) ===
-    right_x = logo_x + logo_text_size + LOGO_MARGIN
-
-    draw.text((right_x, y_main), text_right_1, fill=text_color, font=main_font)
-    draw.text((right_x, y_main + text_right_1_h + LINE_SPACING), text_right_2, fill=text_color, font=main_font)
+    h1 = draw_centered_text(draw, line1, y_main, main_font, text_color, w)
+    draw_centered_text(
+        draw,
+        line2,
+        y_main + h1 + LINE_SPACING,
+        main_font,
+        text_color,
+        w
+)
 
 
     buf = BytesIO()
