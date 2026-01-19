@@ -177,7 +177,7 @@ def generate_life_calendar(birth_str, lifespan, w, h, theme, lang, font_size=0):
     # =========================
     # Отдельные настройки интерльяжа для русского и английского
     if lang == "ru":
-        LINE_SPACING = int(main_px * 0.05)  # межстрочный интервал для русского
+        LINE_SPACING = int(main_px * 0.01)  # межстрочный интервал для русского
     else:
         LINE_SPACING = int(main_px * 0.16)  # межстрочный интервал для английского
 
