@@ -146,8 +146,17 @@ def generate_life_calendar(birth_str, lifespan, w, h, theme, lang, font_size=0):
     # =========================
     # TEXT DRAW
     # =========================
-    text_left = "ДЕЙСТВУЙ" if lang == "ru" else "ACT"
-    text_right = "У ТЕБЯ ЕЩЁ ЕСТЬ ВРЕМЯ." if lang == "ru" else "YOU STILL HAVE TIME."
+    # Тексты в два ряда
+    if lang == "ru":
+        text_left_1 = "ДЕЙСТВУЙ"
+        text_left_2 = "СЕЙЧАС."
+        text_right_1 = "У ТЕБЯ ЕЩЁ"
+        text_right_2 = "ЕСТЬ ВРЕМЯ."
+    else:
+        text_left_1 = "ACT"
+        text_left_2 = "NOW."
+        text_right_1 = "YOU STILL"
+        text_right_2 = "HAVE TIME."
 
     y_percent = actual_grid_bottom + PERCENT_GAP
     draw_centered_text_two_colors(
@@ -162,34 +171,56 @@ def generate_life_calendar(birth_str, lifespan, w, h, theme, lang, font_size=0):
     )
 
     # =========================
-    # THREE BLOCK TEXT WITH LOGO
+    # THREE BLOCK TEXT WITH LOGO (2 LINES EACH SIDE)
     # =========================
-    # Загружаем логотип для текста
-    logo_text_size = int(main_px * 1.2)  # размер логотипа примерно как высота текста
+    LINE_SPACING = int(main_px * 0.2)  # межстрочный интервал
 
     # Вычисляем размеры текстов
-    bbox_left = draw.textbbox((0, 0), text_left, font=main_font)
-    text_left_w = bbox_left[2] - bbox_left[0]
-    text_left_h = bbox_left[3] - bbox_left[1]
+    bbox_left_1 = draw.textbbox((0, 0), text_left_1, font=main_font)
+    text_left_1_w = bbox_left_1[2] - bbox_left_1[0]
+    text_left_1_h = bbox_left_1[3] - bbox_left_1[1]
 
-    bbox_right = draw.textbbox((0, 0), text_right, font=main_font)
-    text_right_w = bbox_right[2] - bbox_right[0]
+    bbox_left_2 = draw.textbbox((0, 0), text_left_2, font=main_font)
+    text_left_2_w = bbox_left_2[2] - bbox_left_2[0]
+    text_left_2_h = bbox_left_2[3] - bbox_left_2[1]
+
+    bbox_right_1 = draw.textbbox((0, 0), text_right_1, font=main_font)
+    text_right_1_w = bbox_right_1[2] - bbox_right_1[0]
+    text_right_1_h = bbox_right_1[3] - bbox_right_1[1]
+
+    bbox_right_2 = draw.textbbox((0, 0), text_right_2, font=main_font)
+    text_right_2_w = bbox_right_2[2] - bbox_right_2[0]
+
+    # Максимальные ширины для выравнивания
+    max_left_w = max(text_left_1_w, text_left_2_w)
+    max_right_w = max(text_right_1_w, text_right_2_w)
+
+    # Высота текстового блока (2 строки)
+    text_block_h = text_left_1_h + LINE_SPACING + text_left_2_h
+
+    # Размер логотипа - по высоте текстового блока
+    logo_text_size = int(text_block_h)
+
+    # Отступ между текстом и логотипом (плотно)
+    LOGO_MARGIN = int(main_px * 0.5)
 
     # Общая ширина композиции
-    LOGO_MARGIN = int(main_px * 0.8)  # отступ между текстом и логотипом
-    total_width = text_left_w + LOGO_MARGIN + logo_text_size + LOGO_MARGIN + text_right_w
+    total_width = max_left_w + LOGO_MARGIN + logo_text_size + LOGO_MARGIN + max_right_w
 
     # Стартовая позиция для центрирования всей композиции
     start_x = (w - total_width) // 2
 
-    # Рисуем левый текст (выравнивание вправо)
-    draw.text((start_x, y_main), text_left, fill=text_color, font=main_font)
+    # === РИСУЕМ ЛЕВЫЙ ТЕКСТ (выравнивание вправо) ===
+    left_1_x = start_x + max_left_w - text_left_1_w
+    left_2_x = start_x + max_left_w - text_left_2_w
 
-    # Позиция для логотипа
-    logo_x = start_x + text_left_w + LOGO_MARGIN
-    logo_y = y_main + (text_left_h - logo_text_size) // 2  # центрируем по вертикали относительно текста
+    draw.text((left_1_x, y_main), text_left_1, fill=text_color, font=main_font)
+    draw.text((left_2_x, y_main + text_left_1_h + LINE_SPACING), text_left_2, fill=text_color, font=main_font)
 
-    # Рисуем логотип
+    # === РИСУЕМ ЛОГОТИП ===
+    logo_x = start_x + max_left_w + LOGO_MARGIN
+    logo_y = y_main  # выравниваем по верхней линии текста
+
     logo_rendered = None
 
     # Загружаем PNG логотип для текста
@@ -216,9 +247,11 @@ def generate_life_calendar(birth_str, lifespan, w, h, theme, lang, font_size=0):
         r_circle = logo_text_size // 2
         draw.ellipse([cx - r_circle, cy - r_circle, cx + r_circle, cy + r_circle], fill=text_color)
 
-    # Рисуем правый текст (выравнивание влево)
+    # === РИСУЕМ ПРАВЫЙ ТЕКСТ (выравнивание влево) ===
     right_x = logo_x + logo_text_size + LOGO_MARGIN
-    draw.text((right_x, y_main), text_right, fill=text_color, font=main_font)
+
+    draw.text((right_x, y_main), text_right_1, fill=text_color, font=main_font)
+    draw.text((right_x, y_main + text_right_1_h + LINE_SPACING), text_right_2, fill=text_color, font=main_font)
 
 
     buf = BytesIO()
