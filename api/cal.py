@@ -60,7 +60,7 @@ def generate_life_calendar(birth_str, lifespan, w, h, theme, lang, font_size=0):
     # =========================
     # TEXT SETUP
     # =========================
-    main_px = font_size if font_size > 0 else max(30, min(150, int(w * 0.042)))
+    main_px = font_size if font_size > 0 else max(30, min(150, int(w * 0.038)))
     small_px = int(main_px * 0.6)
 
     main_font = get_font(main_px)
@@ -183,11 +183,17 @@ def generate_image(params):
     def get(name, default=None):
         return params.get(name, [default])[0]
 
+    # Increase resolution by 1.5x for better quality
+    w_base = min(5000, max(300, int(get("w", 1179))))
+    h_base = min(5000, max(300, int(get("h", 2556))))
+    w_final = int(w_base * 1.5)
+    h_final = int(h_base * 1.5)
+
     return generate_life_calendar(
         get("birth"),
         int(get("lifespan", 90)),
-        min(5000, max(300, int(get("w", 1179)))),
-        min(5000, max(300, int(get("h", 2556)))),
+        w_final,
+        h_final,
         get("theme", "black"),
         get("lang", "en"),
         int(get("fs", 50)),
