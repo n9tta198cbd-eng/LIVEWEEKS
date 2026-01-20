@@ -52,7 +52,7 @@ def generate_life_calendar(birth_str, lifespan, w, h, theme, lang, font_size=0):
     lived_color = (152, 152, 152)
     future_color = (217, 217, 217)
     current_color = (255, 77, 77)
-    text_color = (217, 217, 217)
+    text_color = (255, 255, 255)
 
     img = Image.new("RGB", (w, h), bg)
     draw = ImageDraw.Draw(img)
