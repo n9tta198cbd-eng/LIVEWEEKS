@@ -157,7 +157,11 @@ def generate_life_calendar(birth_str, lifespan, w, h, theme, lang, font_size=0):
         w,
     )
 
-    LINE_SPACING = int(main_px * 0.25)  # межстрочный интервал
+    # Separate line spacing for each language
+    if lang == "ru":
+        LINE_SPACING = int(main_px * 0.05)
+    else:
+        LINE_SPACING = int(main_px * 0.20)
 
     h1 = draw_centered_text(draw, line1, y_main, main_font, text_color, w)
     draw_centered_text(
