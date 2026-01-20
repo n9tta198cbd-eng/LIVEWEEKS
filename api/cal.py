@@ -74,7 +74,7 @@ def generate_life_calendar(birth_str, lifespan, w, h, theme, lang, font_size=0):
     SIDE_PADDING = 80
     PERCENT_GAP = 20
 
-    BOTTOM_TEXT_OFFSET = 450    # ФИКС: от низа до текста
+    BOTTOM_TEXT_OFFSET = 400    # ФИКС: от низа до текста
     TEXT_TO_GRID_GAP = 150       # ФИКС: от текста до сетки
 
     # =========================
