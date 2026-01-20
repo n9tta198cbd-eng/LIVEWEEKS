@@ -167,7 +167,7 @@ function updateApiUrl() {
         `&lifespan=${lifespan}` +
         `&w=${resolution.w}` +
         `&h=${resolution.h}` +
-        `&fs=50`;
+        `&fs=60`;
 
     apiUrlInput.value = url;
 }
