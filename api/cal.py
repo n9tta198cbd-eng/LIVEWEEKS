@@ -94,7 +94,7 @@ def generate_life_calendar(birth_str, lifespan, w, h, theme, lang, font_size=0):
     grid_w = w - SIDE_PADDING * 2
     grid_h = grid_end_y - grid_start_y
 
-    cell = min(grid_w / cols, grid_h / rows) / 1.35  # Уменьшен грид в 1.35 раза
+    cell = min(grid_w / cols, grid_h / rows) / 1.25  # Уменьшен грид в 1.25 раза
     gap = cell * 0.30
     r = (cell - gap) / 2
 
