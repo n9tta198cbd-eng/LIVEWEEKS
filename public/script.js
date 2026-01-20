@@ -1,7 +1,7 @@
 // State management
 const state = {
     language: 'eng', // 'ru' or 'eng'
-    color: 'black', // 'white' or 'black'
+    color: 'black', // 'gray' or 'black'
     birthYear: 2000,
     birthMonth: 1,
     birthDay: 1,
@@ -153,7 +153,7 @@ function updateApiUrl() {
     const model = state.iphoneModel || 'iphone15';
     const resolution = iphoneResolutions[model];
 
-    const theme = state.color;      // black | white
+    const theme = state.color;      // black | gray
     const lang = state.language;    // eng | ru
 
     const baseUrl = window.location.origin;
@@ -262,13 +262,13 @@ colorBlack.addEventListener('click', () => {
 });
 
 colorWhite.addEventListener('click', () => {
-    state.color = 'white';
+    state.color = 'gray';
     updateColorOnly();
 });
 
 // Navigation arrows (cycle through previews)
 // Color-only navigation (arrows + swipe)
-const previewColors = ['black', 'white'];
+const previewColors = ['black', 'gray'];
 
 function getColorIndex() {
     return previewColors.indexOf(state.color);

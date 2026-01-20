@@ -48,7 +48,7 @@ def generate_life_calendar(birth_str, lifespan, w, h, theme, lang, font_size=0):
     total_weeks = int(lifespan * 365.2422 / 7)
     percent = (lived_weeks / total_weeks * 100) if total_weeks else 0
 
-    bg = (185, 185, 185) if theme == "white" else (0, 0, 0)
+    bg = (185, 185, 185) if theme == "gray" else (0, 0, 0)
     lived_color = (152, 152, 152)
     future_color = (217, 217, 217)
     current_color = (255, 77, 77)
