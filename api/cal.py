@@ -74,8 +74,8 @@ def generate_life_calendar(birth_str, lifespan, w, h, theme, lang, font_size=0):
     SIDE_PADDING = 80
     PERCENT_GAP = 20
 
-    BOTTOM_TEXT_OFFSET = 425    # ФИКС: от низа до текста
-    TEXT_TO_GRID_GAP = 150       # ФИКС: от текста до сетки
+    BOTTOM_TEXT_OFFSET = 425    # Р¤РРљРЎ: РѕС‚ РЅРёР·Р° РґРѕ С‚РµРєСЃС‚Р°
+    TEXT_TO_GRID_GAP = 150       # Р¤РРљРЎ: РѕС‚ С‚РµРєСЃС‚Р° РґРѕ СЃРµС‚РєРё
 
     # =========================
     # TEXT POSITION
@@ -88,22 +88,34 @@ def generate_life_calendar(birth_str, lifespan, w, h, theme, lang, font_size=0):
     cols = 55
     rows = math.ceil(total_weeks / cols)
 
-    grid_end_y = y_main - TEXT_TO_GRID_GAP   # ЖЕСТКО 150px
+    grid_end_y = y_main - TEXT_TO_GRID_GAP   # Р–Р•РЎРўРљРћ 150px
     grid_start_y = 0
 
     grid_w = w - SIDE_PADDING * 2
     grid_h = grid_end_y - grid_start_y
 
-    cell = min(grid_w / cols, grid_h / rows) / 1.25  # Уменьшен грид в 1.25 раза
+    # Adaptive grid scaling based on screen height
+    # Base height: iPhone 13 (2532px base * 1.5x quality = 3798px)
+    BASE_HEIGHT = 2532 * 1.5
+
+    # For screens larger than iPhone 13, reduce division factor to make grid bigger
+    if h > BASE_HEIGHT:
+        # Proportionally reduce the scale factor for larger screens
+        scale_factor = 1.25 - ((h - BASE_HEIGHT) / BASE_HEIGHT) * 0.3
+        scale_factor = max(1.0, scale_factor)  # Don't go below 1.0
+    else:
+        scale_factor = 1.25
+
+    cell = min(grid_w / cols, grid_h / rows) / scale_factor  # РЈРјРµРЅСЊС€РµРЅ РіСЂРёРґ РІ 1.25 СЂР°Р·Р°
     gap = cell * 0.30
     r = (cell - gap) / 2
 
     used_w = cols * cell
     used_h = rows * cell
 
-    # горизонталь — центр
+    # РіРѕСЂРёР·РѕРЅС‚Р°Р»СЊ вЂ” С†РµРЅС‚СЂ
     ox = SIDE_PADDING + (grid_w - used_w) / 2
-    # вертикаль — ПРИЖАТО К НИЗУ
+    # РІРµСЂС‚РёРєР°Р»СЊ вЂ” РџР РР–РђРўРћ Рљ РќРР—РЈ
     oy = grid_end_y - used_h
 
     actual_grid_bottom = oy + used_h
@@ -142,8 +154,8 @@ def generate_life_calendar(birth_str, lifespan, w, h, theme, lang, font_size=0):
     # =========================
     # TEXT DRAW
     # =========================
-    line1 = "ДЕЙСТВУЙ СЕЙЧАС" if lang == "ru" else "ACT NOW"
-    line2 = "У ТЕБЯ ЕЩЕ ЕСТЬ ВРЕМЯ" if lang == "ru" else "YOU STILL HAVE TIME"
+    line1 = "Р”Р•Р™РЎРўР’РЈР™ РЎР•Р™Р§РђРЎ" if lang == "ru" else "ACT NOW"
+    line2 = "РЈ РўР•Р‘РЇ Р•Р©Р• Р•РЎРўР¬ Р’Р Р•РњРЇ" if lang == "ru" else "YOU STILL HAVE TIME"
 
     y_percent = actual_grid_bottom + PERCENT_GAP
     draw_centered_text_two_colors(
