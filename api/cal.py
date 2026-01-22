@@ -99,14 +99,15 @@ def generate_life_calendar(birth_str, lifespan, w, h, theme, lang, font_size=0):
     BASE_HEIGHT = 2532 * 1.5
 
     # For screens larger than iPhone 13, reduce division factor to make grid bigger
+    # Larger screens get +10-15% bigger grid
     if h > BASE_HEIGHT:
         # Proportionally reduce the scale factor for larger screens
-        scale_factor = 1.25 - ((h - BASE_HEIGHT) / BASE_HEIGHT) * 0.3
+        scale_factor = 1.25 - ((h - BASE_HEIGHT) / BASE_HEIGHT) * 1.2
         scale_factor = max(1.0, scale_factor)  # Don't go below 1.0
     else:
         scale_factor = 1.25
 
-    cell = min(grid_w / cols, grid_h / rows) / scale_factor  # РЈРјРµРЅСЊС€РµРЅ РіСЂРёРґ РІ 1.25 СЂР°Р·Р°
+    cell = min(grid_w / cols, grid_h / rows) / scale_factor
     gap = cell * 0.30
     r = (cell - gap) / 2
 
