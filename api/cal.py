@@ -74,7 +74,7 @@ def generate_life_calendar(birth_str, lifespan, w, h, theme, lang, font_size=0):
     SIDE_PADDING = 80
     PERCENT_GAP = 20
 
-    BOTTOM_TEXT_OFFSET = 425    # Р¤РРљРЎ: РѕС‚ РЅРёР·Р° РґРѕ С‚РµРєСЃС‚Р°
+    BOTTOM_TEXT_OFFSET = 460    # Р¤РРљРЎ: РѕС‚ РЅРёР·Р° РґРѕ С‚РµРєСЃС‚Р°
     TEXT_TO_GRID_GAP = 150       # Р¤РРљРЎ: РѕС‚ С‚РµРєСЃС‚Р° РґРѕ СЃРµС‚РєРё
 
     # =========================
@@ -94,19 +94,20 @@ def generate_life_calendar(birth_str, lifespan, w, h, theme, lang, font_size=0):
     grid_w = w - SIDE_PADDING * 2
     grid_h = grid_end_y - grid_start_y
 
-    # Adaptive grid scaling based on screen height
-    # Base: iPhone 13 Pro (1170x2532, 1.5x = 1755x3798)
-    # Target: iPhone 16 Pro Max (1320x2868, 1.5x = 1980x4302) needs +12% grid
-    BASE_HEIGHT = 2532 * 1.5
+    # Adaptive grid scaling by device groups (based on height with 1.5x)
+    # Group 1 - Standard (h <= 3700): iPhone 13 mini, SE, 11, XR
+    # Group 2 - Pro Standard (3700 < h <= 3900): iPhone 13/13 Pro, 14, 15
+    # Group 3 - Pro Max Medium (3900 < h <= 4200): iPhone 13/14/15 Pro Max, 16 Pro
+    # Group 4 - Pro Max Large (h > 4200): iPhone 16/17 Pro Max
 
-    # Coefficient calculation for +12% grid at iPhone 16 Pro Max:
-    # scale_factor: 1.25 -> 1.116 (for +12% grid)
-    # coefficient = (1.25 - 1.116) / ((4302-3798)/3798) = 0.134 / 0.1327 = 1.01
-    if h > BASE_HEIGHT:
-        scale_factor = 1.25 - ((h - BASE_HEIGHT) / BASE_HEIGHT) * 1.01
-        scale_factor = max(1.0, scale_factor)  # Don't go below 1.0
+    if h <= 3700:
+        scale_factor = 1.25  # Group 1: Standard
+    elif h <= 3900:
+        scale_factor = 1.18  # Group 2: Pro Standard
+    elif h <= 4200:
+        scale_factor = 1.165  # Group 3: Pro Max Medium
     else:
-        scale_factor = 1.25
+        scale_factor = 1.15  # Group 4: Pro Max Large
 
     cell = min(grid_w / cols, grid_h / rows) / scale_factor
     gap = cell * 0.30

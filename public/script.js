@@ -1,6 +1,6 @@
 // State management
 const state = {
-    language: 'eng', // 'ru' or 'eng'
+    language: 'ru', // 'ru' or 'eng'
     color: 'black', // 'gray' or 'black'
     birthYear: 2000,
     birthMonth: 1,
