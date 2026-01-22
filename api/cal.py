@@ -69,13 +69,29 @@ def generate_life_calendar(birth_str, lifespan, w, h, theme, lang, font_size=0):
     percent_h = small_font.getbbox("100.0% to 90")[3]
 
     # =========================
-    # FIXED LAYOUT
+    # PROPORTIONAL LAYOUT (based on iPhone 13 Pro: 1755×3798)
     # =========================
-    SIDE_PADDING = 80
-    PERCENT_GAP = 20
+    # Reference device: iPhone 13 Pro with 1.5x quality
+    BASE_WIDTH = 1755
+    BASE_HEIGHT = 3798
 
-    BOTTOM_TEXT_OFFSET = 405 # Р¤РРљРЎ: РѕС‚ РЅРёР·Р° РґРѕ С‚РµРєСЃС‚Р°
-    TEXT_TO_GRID_GAP = 150       # Р¤РРљРЎ: РѕС‚ С‚РµРєСЃС‚Р° РґРѕ СЃРµС‚РєРё
+    # Calculate proportional values for current device
+    SIDE_PADDING = int(w * (80 / BASE_WIDTH))      # 4.56% от ширины
+    PERCENT_GAP = int(h * (20 / BASE_HEIGHT))      # 0.53% от высоты
+    TEXT_TO_GRID_GAP = int(h * (150 / BASE_HEIGHT))    # 3.95% от высоты
+
+    # BOTTOM_TEXT_OFFSET: iPhone 13 Pro = 410px, iPhone 16 Pro Max = 455px
+    # Линейная интерполяция между устройствами
+    BASE_OFFSET = 410
+    TARGET_HEIGHT = 4302  # iPhone 16 Pro Max (1320×2868 * 1.5)
+    TARGET_OFFSET = 455
+
+    if h <= BASE_HEIGHT:
+        # Для экранов <= iPhone 13 Pro - пропорционально уменьшаем
+        BOTTOM_TEXT_OFFSET = int(BASE_OFFSET * (h / BASE_HEIGHT))
+    else:
+        # Для экранов > iPhone 13 Pro - интерполяция от 410 до 455
+        BOTTOM_TEXT_OFFSET = int(BASE_OFFSET + (h - BASE_HEIGHT) * (TARGET_OFFSET - BASE_OFFSET) / (TARGET_HEIGHT - BASE_HEIGHT))
 
     # =========================
     # TEXT POSITION
