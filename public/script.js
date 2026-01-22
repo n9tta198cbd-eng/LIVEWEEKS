@@ -34,13 +34,20 @@ const modalDescription = document.getElementById('modal-description');
 const section1Title = document.getElementById('section-1-title');
 const section2Title = document.getElementById('section-2-title');
 const section3Title = document.getElementById('section-3-title');
+const section4Title = document.getElementById('section-4-title');
+const section5Title = document.getElementById('section-5-title');
+const section6Title = document.getElementById('section-6-title');
+const section7Title = document.getElementById('section-7-title');
 const birthDateLabel = document.getElementById('birth-date-label');
 const iphoneModelLabel = document.getElementById('iphone-model-label');
-const automationInstruction = document.getElementById('automation-instruction');
-const shortcutInstruction = document.getElementById('shortcut-instruction');
-const action1Text = document.getElementById('action-1-text');
-const action2Text = document.getElementById('action-2-text');
-const importantNote = document.getElementById('important-note');
+const step2Text = document.getElementById('step-2-text');
+const step3Text = document.getElementById('step-3-text');
+const step4Text = document.getElementById('step-4-text');
+const step5Text = document.getElementById('step-5-text');
+const step6Text = document.getElementById('step-6-text');
+const step7Text = document.getElementById('step-7-text');
+const tipTitle = document.getElementById('tip-title');
+const tipText = document.getElementById('tip-text');
 const yearLabel = document.getElementById('year-label');
 const monthLabel = document.getElementById('month-label');
 const dayLabel = document.getElementById('day-label');
@@ -58,9 +65,13 @@ const translations = {
     eng: {
         modalTitle: '0-90 calendar',
         modalDescription: '',
-        section1Title: 'Configure',
-        section2Title: 'Create Automation',
-        section3Title: 'Create Shortcut',
+        section1Title: '1. Configure',
+        section2Title: '2. Go to "Automation"',
+        section3Title: '3. Create new automation',
+        section4Title: '4. Set schedule',
+        section5Title: '5. Add download action',
+        section6Title: '6. Add wallpaper setup',
+        section7Title: '7. Save and disable confirmation',
         birthDateLabel: 'Date of Birth',
         iphoneModelLabel: 'iPhone Model',
         yearLabel: 'Year',
@@ -68,18 +79,26 @@ const translations = {
         dayLabel: 'Day',
         dateErrorInvalid: 'Invalid date',
         dateErrorFuture: 'Date cannot be in the future',
-        automationInstruction: 'Open Shortcuts app → Automation → New → Time of Day → 6:00 AM → Repeat "Daily" → "Run Immediately" → "Create New Shortcut"',
-        shortcutInstruction: 'ADD THESE ACTIONS:',
-        action1Text: '3.1 "Get Contents of URL" → paste URL:',
-        action2Text: '3.2 "Set Wallpaper Photo" → "Lock Screen"',
-        importantNote: 'Important: In "Set Wallpaper Photo", tap arrow → disable "Crop to Subject" and "Show Preview".'
+        step1Text: 'Find the Shortcuts app. If you can\'t find it, swipe down on home screen and type "Shortcuts"',
+        step2Text: 'At the bottom of the screen there\'s an "Automation" tab — tap on it',
+        step3Text: 'Tap + in the top right corner, then select "Time of Day"',
+        step4Text: 'Time: any convenient (e.g., 7:00)\nRepeat: Daily\nDays: Monday (or select days)\n\nTap "Next"',
+        step5Text: 'Type "URL" in the search and select "Get Contents of URL"\n\nPaste the copied link in the URL field (button above)',
+        step6Text: 'Tap + under the first action\n\nType "wallpaper" in the search and select "Set Wallpaper"\n\nImage: Contents of URL (will be set automatically)\nScreen: select "Lock Screen"',
+        step7Text: 'Tap "Done"\n\nImportant: disable "Ask Before Running" so wallpapers change automatically without your participation',
+        tipTitle: '💡 Tip',
+        tipText: 'To check everything works — in the automations list tap on the created one and select "Run". Wallpapers should update immediately.'
     },
     ru: {
         modalTitle: '0-90 календарь',
         modalDescription: '',
-        section1Title: 'Настройка',
-        section2Title: 'Создать автоматизацию',
-        section3Title: 'Команды',
+        section1Title: '1. Настройка',
+        section2Title: '2. Перейди в «Автоматизация»',
+        section3Title: '3. Создай новую автоматизацию',
+        section4Title: '4. Настрой расписание',
+        section5Title: '5. Добавь действие загрузки',
+        section6Title: '6. Добавь установку обоев',
+        section7Title: '7. Сохрани и отключи подтверждение',
         birthDateLabel: 'Дата рождения',
         iphoneModelLabel: 'Модель iPhone',
         yearLabel: 'Год',
@@ -87,11 +106,15 @@ const translations = {
         dayLabel: 'День',
         dateErrorInvalid: 'Неверная дата',
         dateErrorFuture: 'Дата не может быть в будущем',
-        automationInstruction: 'Откройте приложение Команды → Автоматизация → Новый → Время суток → 6:00 (обои появятся в указанное время) → Повтор "По дням" → "Немедленный запуск" → "Далее"',
-        shortcutInstruction: 'ДОБАВЬТЕ ЭТИ ДЕЙСТВИЯ:',
-        action1Text: '"Создать новую быструю команду" → "Получить содержимое URL" → вставьте URL:',
-        action2Text: 'Ниже в поисковой строке найдите "Установить фото как обои" → "Экран блокировки"',
-        importantNote: '*ВАЖНО: В "Установить фото обоев" нажмите стрелочку в кружке → отключите "Обрезать до темы" и "Показать окно просмотра". Нажмите на галочку → Готово. Обои установятся и будут автоматически обновляться в 6:00.'
+        step1Text: 'Найди приложение «Команды» (Shortcuts). Если не можешь найти — потяни вниз на домашнем экране и напиши "Команды"',
+        step2Text: 'Внизу экрана есть вкладка "Автоматизация" — нажми на неё',
+        step3Text: 'Нажми + в правом верхнем углу, затем выбери "Время суток"',
+        step4Text: 'Время: любое удобное (например, 7:00)\nПовтор: Ежедневно\nДень: Понедельник (выбери дни)\n\nНажми "Далее"',
+        step5Text: 'В поиске напиши "URL" и выбери "Получить содержимое URL"\n\nВ поле URL вставь скопированную ссылку (кнопка выше)',
+        step6Text: 'Нажми + под первым действием\n\nВ поиске напиши "обои" и выбери "Задать обои"\n\nИзображение: Содержимое URL (подставится автоматически)\nЭкран: выбери "Экран блокировки"',
+        step7Text: 'Нажми "Готово"\n\nВажно: отключи "Спрашивать до запуска", чтобы обои менялись автоматически без твоего участия',
+        tipTitle: '💡 Совет',
+        tipText: 'Чтобы проверить, что всё работает — в списке автоматизаций нажми на созданную и выбери "Выполнить". Обои должны сразу обновиться.'
     }
 };
 
@@ -103,26 +126,26 @@ function updateModalTranslations() {
     if (section1Title) section1Title.textContent = t.section1Title;
     if (section2Title) section2Title.textContent = t.section2Title;
     if (section3Title) section3Title.textContent = t.section3Title;
+    if (section4Title) section4Title.textContent = t.section4Title;
+    if (section5Title) section5Title.textContent = t.section5Title;
+    if (section6Title) section6Title.textContent = t.section6Title;
+    if (section7Title) section7Title.textContent = t.section7Title;
     if (birthDateLabel) birthDateLabel.textContent = t.birthDateLabel;
     if (iphoneModelLabel) iphoneModelLabel.textContent = t.iphoneModelLabel;
     if (yearLabel) yearLabel.textContent = t.yearLabel;
     if (monthLabel) monthLabel.textContent = t.monthLabel;
     if (dayLabel) dayLabel.textContent = t.dayLabel;
-    if (automationInstruction) {
-        if (state.language === 'eng') {
-            automationInstruction.innerHTML = 'Open <a href="shortcuts://" class="shortcuts-link">Shortcuts</a> app → Automation → New → Time of Day → 6:00 AM → Repeat "Daily" → "Run Immediately" → "Create New Shortcut"';
-        } else {
-            automationInstruction.innerHTML = 'Откройте приложение <a href="shortcuts://" class="shortcuts-link">Команды</a> → Автоматизация → Новый → Время дня → 6:00 → Повтор "По дням" → "Запускать немедленно" → "Далее"';
-        }
-    }
-    if (shortcutInstruction) shortcutInstruction.innerHTML = `<strong>${t.shortcutInstruction}</strong>`;
-    if (action1Text) action1Text.textContent = t.action1Text;
-    if (action2Text) action2Text.textContent = t.action2Text;
-    if (importantNote) {
-        const importantParts = t.importantNote.split(': ');
-        importantNote.innerHTML = `<strong>${importantParts[0]}:</strong> ${importantParts[1]}`;
-    }
-    
+
+    // Update step texts
+    if (step2Text) step2Text.innerHTML = t.step2Text.replace(/\n/g, '<br>');
+    if (step3Text) step3Text.innerHTML = t.step3Text.replace(/\n/g, '<br>');
+    if (step4Text) step4Text.innerHTML = t.step4Text.replace(/\n/g, '<br>');
+    if (step5Text) step5Text.innerHTML = t.step5Text.replace(/\n/g, '<br>');
+    if (step6Text) step6Text.innerHTML = t.step6Text.replace(/\n/g, '<br>');
+    if (step7Text) step7Text.innerHTML = t.step7Text.replace(/\n/g, '<br>');
+    if (tipTitle) tipTitle.textContent = t.tipTitle;
+    if (tipText) tipText.innerHTML = t.tipText.replace(/\n/g, '<br>');
+
     // Update API URL
     updateApiUrl();
 }

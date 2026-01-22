@@ -118,23 +118,42 @@
                 </div>
             </div>
 
-            <!-- Section 2: Create Automation -->
+            <!-- Section 2: Go to Automation -->
             <div class="modal-section">
-                <h3 class="section-title">2. <span id="section-2-title">Create Automation</span></h3>
-                <div class="instruction-text" id="automation-instruction">
-                    Open <a href="shortcuts://" class="shortcuts-link">Shortcuts</a> app → Automation → New → Time of Day → 6:00 AM → Repeat "Daily" → "Run Immediately" → "Create New Shortcut"
+                <h3 class="section-title" id="section-2-title">2. Go to "Automation"</h3>
+                <div class="instruction-text" id="step-2-text">
+                    At the bottom of the screen there's an "Automation" tab — tap on it
                 </div>
             </div>
 
-            <!-- Section 3: Create Shortcut -->
+            <!-- Section 3: Create new automation -->
             <div class="modal-section">
-                <h3 class="section-title">3. <span id="section-3-title">Create Shortcut</span></h3>
-                <div class="instruction-text" id="shortcut-instruction">
-                    <strong>ADD THESE ACTIONS:</strong>
+                <h3 class="section-title" id="section-3-title">3. Create new automation</h3>
+                <div class="instruction-text" id="step-3-text">
+                    Tap + in the top right corner, then select "Time of Day"
                 </div>
-                
+            </div>
+
+            <!-- Section 4: Set schedule -->
+            <div class="modal-section">
+                <h3 class="section-title" id="section-4-title">4. Set schedule</h3>
+                <div class="instruction-text" id="step-4-text">
+                    Time: any convenient (e.g., 7:00)<br>
+                    Repeat: Daily<br>
+                    Days: Monday (or select days)<br><br>
+                    Tap "Next"
+                </div>
+            </div>
+
+            <!-- Section 5: Add download action -->
+            <div class="modal-section">
+                <h3 class="section-title" id="section-5-title">5. Add download action</h3>
+                <div class="instruction-text" id="step-5-text">
+                    Type "URL" in the search and select "Get Contents of URL"<br><br>
+                    Paste the copied link in the URL field (button below)
+                </div>
+
                 <div class="action-item">
-                    <div class="action-text" id="action-1-text">3.1 "Get Contents of URL" → paste URL:</div>
                     <div class="url-container">
                         <input type="text" id="api-url" class="url-input" readonly value="https://lifeweeks.vercel.app/api/cal?type=life&birth=2009-08-01&lifes">
                         <button class="copy-btn" id="copy-btn" title="Copy URL">
@@ -144,13 +163,33 @@
                         </button>
                     </div>
                 </div>
+            </div>
 
-                <div class="action-item">
-                    <div class="action-text" id="action-2-text">3.2 "Set Wallpaper Photo" → "Lock Screen"</div>
+            <!-- Section 6: Add wallpaper setup -->
+            <div class="modal-section">
+                <h3 class="section-title" id="section-6-title">6. Add wallpaper setup</h3>
+                <div class="instruction-text" id="step-6-text">
+                    Tap + under the first action<br><br>
+                    Type "wallpaper" in the search and select "Set Wallpaper"<br><br>
+                    Image: Contents of URL (will be set automatically)<br>
+                    Screen: select "Lock Screen"
                 </div>
+            </div>
 
-                <div class="important-note" id="important-note">
-                    <strong>Important:</strong> In "Set Wallpaper Photo", tap arrow → disable "Crop to Subject" and "Show Preview".
+            <!-- Section 7: Save and disable confirmation -->
+            <div class="modal-section">
+                <h3 class="section-title" id="section-7-title">7. Save and disable confirmation</h3>
+                <div class="instruction-text" id="step-7-text">
+                    Tap "Done"<br><br>
+                    Important: disable "Ask Before Running" so wallpapers change automatically without your participation
+                </div>
+            </div>
+
+            <!-- Tip Section -->
+            <div class="modal-section tip-section">
+                <h3 class="section-title" id="tip-title">💡 Tip</h3>
+                <div class="instruction-text" id="tip-text">
+                    To check everything works — in the automations list tap on the created one and select "Run". Wallpapers should update immediately.
                 </div>
             </div>
         </div>
