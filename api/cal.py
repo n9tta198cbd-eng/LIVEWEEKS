@@ -95,14 +95,15 @@ def generate_life_calendar(birth_str, lifespan, w, h, theme, lang, font_size=0):
     grid_h = grid_end_y - grid_start_y
 
     # Adaptive grid scaling based on screen height
-    # Base height: iPhone 13 (2532px base * 1.5x quality = 3798px)
+    # Base: iPhone 13 Pro (2532px * 1.5x = 3798px)
+    # Target: iPhone 16 Pro (2622px * 1.5x = 3933px) needs +15% grid size
     BASE_HEIGHT = 2532 * 1.5
 
-    # For screens larger than iPhone 13, reduce division factor to make grid bigger
-    # Larger screens get +10-15% bigger grid
+    # Calculate coefficient: for +15% grid at iPhone 16 Pro
+    # scale_factor changes from 1.25 to 1.0625 (1.25 * 0.85)
+    # coefficient = 0.1875 / ((3933-3798)/3798) = 5.28
     if h > BASE_HEIGHT:
-        # Proportionally reduce the scale factor for larger screens
-        scale_factor = 1.25 - ((h - BASE_HEIGHT) / BASE_HEIGHT) * 1.2
+        scale_factor = 1.25 - ((h - BASE_HEIGHT) / BASE_HEIGHT) * 5.28
         scale_factor = max(1.0, scale_factor)  # Don't go below 1.0
     else:
         scale_factor = 1.25
@@ -155,8 +156,8 @@ def generate_life_calendar(birth_str, lifespan, w, h, theme, lang, font_size=0):
     # =========================
     # TEXT DRAW
     # =========================
-    line1 = "Р”Р•Р™РЎРўР’РЈР™ РЎР•Р™Р§РђРЎ" if lang == "ru" else "ACT NOW"
-    line2 = "РЈ РўР•Р‘РЇ Р•Р©Р• Р•РЎРўР¬ Р’Р Р•РњРЇ" if lang == "ru" else "YOU STILL HAVE TIME"
+    line1 = "ДЕЙСТВУЙ СЕЙЧАС" if lang == "ru" else "ACT NOW"
+    line2 = "У ТЕБЯ ЕЩЕ ЕСТЬ ВРЕМЯ" if lang == "ru" else "YOU STILL HAVE TIME"
 
     y_percent = actual_grid_bottom + PERCENT_GAP
     draw_centered_text_two_colors(
