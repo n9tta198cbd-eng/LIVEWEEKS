@@ -95,15 +95,15 @@ def generate_life_calendar(birth_str, lifespan, w, h, theme, lang, font_size=0):
     grid_h = grid_end_y - grid_start_y
 
     # Adaptive grid scaling based on screen height
-    # Base: iPhone 13 Pro (2532px * 1.5x = 3798px)
-    # Target: iPhone 16 Pro (2622px * 1.5x = 3933px) needs +15% grid size
+    # Base: iPhone 13 Pro (1170x2532, 1.5x = 1755x3798)
+    # Target: iPhone 16 Pro Max (1320x2868, 1.5x = 1980x4302) needs +12% grid
     BASE_HEIGHT = 2532 * 1.5
 
-    # Calculate coefficient: for +15% grid at iPhone 16 Pro
-    # scale_factor changes from 1.25 to 1.0625 (1.25 * 0.85)
-    # coefficient = 0.1875 / ((3933-3798)/3798) = 5.28
+    # Coefficient calculation for +12% grid at iPhone 16 Pro Max:
+    # scale_factor: 1.25 -> 1.116 (for +12% grid)
+    # coefficient = (1.25 - 1.116) / ((4302-3798)/3798) = 0.134 / 0.1327 = 1.01
     if h > BASE_HEIGHT:
-        scale_factor = 1.25 - ((h - BASE_HEIGHT) / BASE_HEIGHT) * 5.28
+        scale_factor = 1.25 - ((h - BASE_HEIGHT) / BASE_HEIGHT) * 1.01
         scale_factor = max(1.0, scale_factor)  # Don't go below 1.0
     else:
         scale_factor = 1.25
