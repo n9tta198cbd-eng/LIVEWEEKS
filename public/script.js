@@ -79,15 +79,15 @@ const translations = {
         dayLabel: 'Day',
         dateErrorInvalid: 'Invalid date',
         dateErrorFuture: 'Date cannot be in the future',
-        step1Text: 'Find the Shortcuts app. If you can\'t find it, swipe down on home screen and type "Shortcuts"',
-        step2Text: 'At the bottom of the screen there\'s an "Automation" tab — tap on it',
-        step3Text: 'Tap + in the top right corner, then select "Time of Day"',
-        step4Text: 'Time: any convenient (e.g., 7:00)\nRepeat: Daily\nDays: Monday (or select days)\n\nTap "Next"',
-        step5Text: 'Type "URL" in the search and select "Get Contents of URL"\n\nPaste the copied link in the URL field (button above)',
-        step6Text: 'Tap + under the first action\n\nType "wallpaper" in the search and select "Set Wallpaper"\n\nImage: Contents of URL (will be set automatically)\nScreen: select "Lock Screen"',
-        step7Text: 'Tap "Done"\n\nImportant: disable "Ask Before Running" so wallpapers change automatically without your participation',
+        step1Text: 'This is a built-in Apple app. If you can\'t find it, swipe down on home screen and type <strong>Shortcuts</strong>',
+        step2Text: 'At the bottom of the screen there\'s an <strong>Automation</strong> tab — tap on it',
+        step3Text: 'Tap <strong>+</strong> in the top right corner, then select <strong>Time of Day</strong>',
+        step4Text: 'Time: <strong>any convenient</strong> (e.g., 7:00)\nRepeat: <strong>Daily</strong>\nDays: <strong>Monday</strong> (or select days)\n\nTap <strong>Next</strong>',
+        step5Text: 'Type <strong>URL</strong> in the search and select <strong>Get Contents of URL</strong>\n\nPaste the copied link in the URL field (button above)',
+        step6Text: 'Tap <strong>+</strong> under the first action\n\nType <strong>wallpaper</strong> in the search and select <strong>Set Wallpaper</strong>\n\nImage: <strong>Contents of URL</strong> (will be set automatically)\nScreen: select <strong>Lock Screen</strong>',
+        step7Text: 'Tap <strong>Done</strong>\n\nImportant: disable <strong>Ask Before Running</strong> so wallpapers change automatically without your participation',
         tipTitle: '💡 Tip',
-        tipText: 'To check everything works — in the automations list tap on the created one and select "Run". Wallpapers should update immediately.'
+        tipText: 'To check everything works — in the automations list tap on the created one and select <strong>Run</strong>. Wallpapers should update immediately.'
     },
     ru: {
         modalTitle: '0-90 календарь',
@@ -106,15 +106,15 @@ const translations = {
         dayLabel: 'День',
         dateErrorInvalid: 'Неверная дата',
         dateErrorFuture: 'Дата не может быть в будущем',
-        step1Text: 'Найди приложение «Команды» (Shortcuts). Если не можешь найти — потяни вниз на домашнем экране и напиши "Команды"',
-        step2Text: 'Внизу экрана есть вкладка "Автоматизация" — нажми на неё',
-        step3Text: 'Нажми + в правом верхнем углу, затем выбери "Время суток"',
-        step4Text: 'Время: любое удобное (например, 7:00)\nПовтор: Ежедневно\nДень: Понедельник (выбери дни)\n\nНажми "Далее"',
-        step5Text: 'В поиске напиши "URL" и выбери "Получить содержимое URL"\n\nВ поле URL вставь скопированную ссылку (кнопка выше)',
-        step6Text: 'Нажми + под первым действием\n\nВ поиске напиши "обои" и выбери "Задать обои"\n\nИзображение: Содержимое URL (подставится автоматически)\nЭкран: выбери "Экран блокировки"',
-        step7Text: 'Нажми "Готово"\n\nВажно: отключи "Спрашивать до запуска", чтобы обои менялись автоматически без твоего участия',
+        step1Text: 'Это встроенное приложение Apple. Если не можешь найти — потяни вниз на домашнем экране и напиши <strong>Команды</strong>',
+        step2Text: 'Внизу экрана есть вкладка <strong>Автоматизация</strong> — нажми на неё',
+        step3Text: 'Нажми <strong>+</strong> в правом верхнем углу, затем выбери <strong>Время суток</strong>',
+        step4Text: 'Время: <strong>любое удобное</strong> (например, 7:00)\nПовтор: <strong>Ежедневно</strong>\nДень: <strong>Понедельник</strong> (выбери дни)\n\nНажми <strong>Далее</strong>',
+        step5Text: 'В поиске напиши <strong>URL</strong> и выбери <strong>Получить содержимое URL</strong>\n\nВ поле URL вставь скопированную ссылку (кнопка выше)',
+        step6Text: 'Нажми <strong>+</strong> под первым действием\n\nВ поиске напиши <strong>обои</strong> и выбери <strong>Задать обои</strong>\n\nИзображение: <strong>Содержимое URL</strong> (подставится автоматически)\nЭкран: выбери <strong>Экран блокировки</strong>',
+        step7Text: 'Нажми <strong>Готово</strong>\n\nВажно: отключи <strong>Спрашивать до запуска</strong>, чтобы обои менялись автоматически без твоего участия',
         tipTitle: '💡 Совет',
-        tipText: 'Чтобы проверить, что всё работает — в списке автоматизаций нажми на созданную и выбери "Выполнить". Обои должны сразу обновиться.'
+        tipText: 'Чтобы проверить, что всё работает — в списке автоматизаций нажми на созданную и выбери <strong>Выполнить</strong>. Обои должны сразу обновиться.'
     }
 };
 
