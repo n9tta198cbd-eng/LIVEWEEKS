@@ -112,7 +112,7 @@ function updateModalTranslations() {
         if (state.language === 'eng') {
             automationInstruction.innerHTML = 'Open <a href="shortcuts://" class="shortcuts-link">Shortcuts</a> app → Automation → New → Time of Day → 6:00 AM → Repeat "Daily" → "Run Immediately" → "Create New Shortcut"';
         } else {
-            automationInstruction.innerHTML = 'Откройте приложение <a href="shortcuts://" class="shortcuts-link">Команды</a> → Автоматизация → Новый → Время дня → 6:00 → Повторять "Ежедневно" → "Запускать немедленно" → "Создать новую команду"';
+            automationInstruction.innerHTML = 'Откройте приложение <a href="shortcuts://" class="shortcuts-link">Команды</a> → Автоматизация → Новый → Время дня → 6:00 → Повтор "По дням" → "Запускать немедленно" → "Далее"';
         }
     }
     if (shortcutInstruction) shortcutInstruction.innerHTML = `<strong>${t.shortcutInstruction}</strong>`;
