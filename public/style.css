@@ -780,3 +780,65 @@ color: #9f9f9f;
     justify-content: center;
 
 }
+
+/* Highlight text (like buttons/actions) */
+.highlight {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: 500;
+}
+
+/* Info block with icons */
+.info-block {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 16px;
+    margin: 12px 0;
+}
+
+.info-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 0;
+}
+
+.info-row:not(:last-child) {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.info-icon {
+    font-size: 18px;
+    width: 24px;
+    text-align: center;
+}
+
+.info-row span:last-child {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 14px;
+}
+
+.info-row strong {
+    color: #fff;
+    font-weight: 600;
+}
+
+/* Tip section styling */
+.tip-section {
+    background: rgba(255, 193, 7, 0.1);
+    border-radius: 12px;
+    padding: 16px;
+    margin-top: 16px;
+}
+
+.tip-section .section-title {
+    color: #ffc107;
+    font-size: 14px;
+    margin-bottom: 8px;
+}
+
+.tip-section .instruction-text {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 13px;
+}

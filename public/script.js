@@ -42,12 +42,21 @@ const birthDateLabel = document.getElementById('birth-date-label');
 const iphoneModelLabel = document.getElementById('iphone-model-label');
 const step2Text = document.getElementById('step-2-text');
 const step3Text = document.getElementById('step-3-text');
-const step4Text = document.getElementById('step-4-text');
+const step4Action = document.getElementById('step-4-action');
 const step5Text = document.getElementById('step-5-text');
+const step5Text2 = document.getElementById('step-5-text-2');
 const step6Text = document.getElementById('step-6-text');
+const step6Text2 = document.getElementById('step-6-text-2');
 const step7Text = document.getElementById('step-7-text');
+const step7Text2 = document.getElementById('step-7-text-2');
 const tipTitle = document.getElementById('tip-title');
 const tipText = document.getElementById('tip-text');
+// Info block elements
+const step4Time = document.getElementById('step-4-time');
+const step4Repeat = document.getElementById('step-4-repeat');
+const step4Day = document.getElementById('step-4-day');
+const step6Image = document.getElementById('step-6-image');
+const step6Screen = document.getElementById('step-6-screen');
 const yearLabel = document.getElementById('year-label');
 const monthLabel = document.getElementById('month-label');
 const dayLabel = document.getElementById('day-label');
@@ -79,13 +88,20 @@ const translations = {
         dayLabel: 'Day',
         dateErrorInvalid: 'Invalid date',
         dateErrorFuture: 'Date cannot be in the future',
-        step1Text: 'This is a built-in Apple app. If you can\'t find it, swipe down on home screen and type <strong>Shortcuts</strong>',
-        step2Text: 'At the bottom of the screen there\'s an <strong>Automation</strong> tab — tap on it',
-        step3Text: 'Tap <strong>+</strong> in the top right corner, then select <strong>Time of Day</strong>',
-        step4Text: 'Time: <strong>any convenient</strong> (e.g., 7:00)\nRepeat: <strong>Daily</strong>\nDays: <strong>Monday</strong> (or select days)\n\nTap <strong>Next</strong>',
-        step5Text: 'Type <strong>URL</strong> in the search and select <strong>Get Contents of URL</strong>\n\nPaste the copied link in the URL field (button above)',
-        step6Text: 'Tap <strong>+</strong> under the first action\n\nType <strong>wallpaper</strong> in the search and select <strong>Set Wallpaper</strong>\n\nImage: <strong>Contents of URL</strong> (will be set automatically)\nScreen: select <strong>Lock Screen</strong>',
-        step7Text: 'Tap <strong>Done</strong>\n\nImportant: disable <strong>Ask Before Running</strong> so wallpapers change automatically without your participation',
+        step2Text: 'At the bottom of the screen there\'s an <span class="highlight">Automation</span> tab — tap on it',
+        step3Text: 'Tap <span class="highlight">+</span> in the top right corner, then select <span class="highlight">Time of Day</span>',
+        step4Action: 'Tap <span class="highlight">Next</span>',
+        step4Time: 'Time: <strong>any convenient</strong> (e.g., 7:00)',
+        step4Repeat: 'Repeat: <strong>Daily</strong>',
+        step4Day: 'Day: <strong>Monday</strong>',
+        step5Text: 'Type <span class="highlight">URL</span> in the search and select <span class="highlight">Get Contents of URL</span>',
+        step5Text2: 'Paste the copied link in the URL field (button below)',
+        step6Text: 'Tap <span class="highlight">+</span> under the first action',
+        step6Text2: 'Type <span class="highlight">wallpaper</span> in the search and select <span class="highlight">Set Wallpaper</span>',
+        step6Image: 'Image: <strong>Contents of URL</strong> (will be set automatically)',
+        step6Screen: 'Screen: select <strong>Lock Screen</strong>',
+        step7Text: 'Tap <span class="highlight">Done</span>',
+        step7Text2: 'Important: disable <span class="highlight">Ask Before Running</span> so wallpapers change automatically without your participation',
         tipTitle: '💡 Tip',
         tipText: 'To check everything works — in the automations list tap on the created one and select <strong>Run</strong>. Wallpapers should update immediately.'
     },
@@ -106,13 +122,20 @@ const translations = {
         dayLabel: 'День',
         dateErrorInvalid: 'Неверная дата',
         dateErrorFuture: 'Дата не может быть в будущем',
-        step1Text: 'Это встроенное приложение Apple. Если не можешь найти — потяни вниз на домашнем экране и напиши <strong>Команды</strong>',
-        step2Text: 'Внизу экрана есть вкладка <strong>Автоматизация</strong> — нажми на неё',
-        step3Text: 'Нажми <strong>+</strong> в правом верхнем углу, затем выбери <strong>Время суток</strong>',
-        step4Text: 'Время: <strong>любое удобное</strong> (например, 7:00)\nПовтор: <strong>Ежедневно</strong>\nДень: <strong>Понедельник</strong> (выбери дни)\n\nНажми <strong>Далее</strong>',
-        step5Text: 'В поиске напиши <strong>URL</strong> и выбери <strong>Получить содержимое URL</strong>\n\nВ поле URL вставь скопированную ссылку (кнопка выше)',
-        step6Text: 'Нажми <strong>+</strong> под первым действием\n\nВ поиске напиши <strong>обои</strong> и выбери <strong>Задать обои</strong>\n\nИзображение: <strong>Содержимое URL</strong> (подставится автоматически)\nЭкран: выбери <strong>Экран блокировки</strong>',
-        step7Text: 'Нажми <strong>Готово</strong>\n\nВажно: отключи <strong>Спрашивать до запуска</strong>, чтобы обои менялись автоматически без твоего участия',
+        step2Text: 'Внизу экрана есть вкладка <span class="highlight">Автоматизация</span> — нажми на неё',
+        step3Text: 'Нажми <span class="highlight">+</span> в правом верхнем углу, затем выбери <span class="highlight">Время суток</span>',
+        step4Action: 'Нажми <span class="highlight">Далее</span>',
+        step4Time: 'Время: <strong>любое удобное</strong> (например, 7:00)',
+        step4Repeat: 'Повтор: <strong>Ежедневно</strong>',
+        step4Day: 'День: <strong>Понедельник</strong>',
+        step5Text: 'В поиске напиши <span class="highlight">URL</span> и выбери <span class="highlight">Получить содержимое URL</span>',
+        step5Text2: 'В поле URL вставь скопированную ссылку (кнопка ниже)',
+        step6Text: 'Нажми <span class="highlight">+</span> под первым действием',
+        step6Text2: 'В поиске напиши <span class="highlight">обои</span> и выбери <span class="highlight">Задать обои</span>',
+        step6Image: 'Изображение: <strong>Содержимое URL</strong> (подставится автоматически)',
+        step6Screen: 'Экран: выбери <strong>Экран блокировки</strong>',
+        step7Text: 'Нажми <span class="highlight">Готово</span>',
+        step7Text2: 'Важно: отключи <span class="highlight">Спрашивать до запуска</span>, чтобы обои менялись автоматически без твоего участия',
         tipTitle: '💡 Совет',
         tipText: 'Чтобы проверить, что всё работает — в списке автоматизаций нажми на созданную и выбери <strong>Выполнить</strong>. Обои должны сразу обновиться.'
     }
@@ -137,14 +160,24 @@ function updateModalTranslations() {
     if (dayLabel) dayLabel.textContent = t.dayLabel;
 
     // Update step texts
-    if (step2Text) step2Text.innerHTML = t.step2Text.replace(/\n/g, '<br>');
-    if (step3Text) step3Text.innerHTML = t.step3Text.replace(/\n/g, '<br>');
-    if (step4Text) step4Text.innerHTML = t.step4Text.replace(/\n/g, '<br>');
-    if (step5Text) step5Text.innerHTML = t.step5Text.replace(/\n/g, '<br>');
-    if (step6Text) step6Text.innerHTML = t.step6Text.replace(/\n/g, '<br>');
-    if (step7Text) step7Text.innerHTML = t.step7Text.replace(/\n/g, '<br>');
+    if (step2Text) step2Text.innerHTML = t.step2Text;
+    if (step3Text) step3Text.innerHTML = t.step3Text;
+    if (step4Action) step4Action.innerHTML = t.step4Action;
+    if (step5Text) step5Text.innerHTML = t.step5Text;
+    if (step5Text2) step5Text2.innerHTML = t.step5Text2;
+    if (step6Text) step6Text.innerHTML = t.step6Text;
+    if (step6Text2) step6Text2.innerHTML = t.step6Text2;
+    if (step7Text) step7Text.innerHTML = t.step7Text;
+    if (step7Text2) step7Text2.innerHTML = t.step7Text2;
     if (tipTitle) tipTitle.textContent = t.tipTitle;
-    if (tipText) tipText.innerHTML = t.tipText.replace(/\n/g, '<br>');
+    if (tipText) tipText.innerHTML = t.tipText;
+
+    // Update info block texts
+    if (step4Time) step4Time.innerHTML = t.step4Time;
+    if (step4Repeat) step4Repeat.innerHTML = t.step4Repeat;
+    if (step4Day) step4Day.innerHTML = t.step4Day;
+    if (step6Image) step6Image.innerHTML = t.step6Image;
+    if (step6Screen) step6Screen.innerHTML = t.step6Screen;
 
     // Update API URL
     updateApiUrl();
