@@ -1,6 +1,6 @@
 // State management
 const state = {
-    language: 'ru', // 'ru' or 'eng'
+    language: 'ru', // 'ru' or 'eng' - Russian by default
     color: 'black', // 'gray' or 'black'
     birthYear: 2000,
     birthMonth: 1,
@@ -30,7 +30,8 @@ const descriptionText = document.getElementById('description-text');
 
 // Modal text elements
 const modalTitle = document.getElementById('modal-title');
-const modalDescription = document.getElementById('modal-description');
+const instructionsTitle = document.getElementById('instructions-title');
+const instructionsSubtitle = document.getElementById('instructions-subtitle');
 const section1Title = document.getElementById('section-1-title');
 const section2Title = document.getElementById('section-2-title');
 const section3Title = document.getElementById('section-3-title');
@@ -40,6 +41,9 @@ const section6Title = document.getElementById('section-6-title');
 const section7Title = document.getElementById('section-7-title');
 const birthDateLabel = document.getElementById('birth-date-label');
 const iphoneModelLabel = document.getElementById('iphone-model-label');
+const urlLabel = document.getElementById('url-label');
+const step1Text = document.getElementById('step-1-text');
+const step1App = document.getElementById('step-1-app');
 const step2Text = document.getElementById('step-2-text');
 const step3Text = document.getElementById('step-3-text');
 const step4Action = document.getElementById('step-4-action');
@@ -73,8 +77,9 @@ function updatePreview() {
 const translations = {
     eng: {
         modalTitle: '0-90 calendar',
-        modalDescription: '',
-        section1Title: '1. Configure',
+        instructionsTitle: 'Auto-update wallpapers',
+        instructionsSubtitle: 'Set up automation so wallpapers update every week',
+        section1Title: '1. Open "Shortcuts" app',
         section2Title: '2. Go to "Automation"',
         section3Title: '3. Create new automation',
         section4Title: '4. Set schedule',
@@ -83,11 +88,14 @@ const translations = {
         section7Title: '7. Save and disable confirmation',
         birthDateLabel: 'Date of Birth',
         iphoneModelLabel: 'iPhone Model',
+        urlLabel: 'Link for automation',
         yearLabel: 'Year',
         monthLabel: 'Month',
         dayLabel: 'Day',
         dateErrorInvalid: 'Invalid date',
         dateErrorFuture: 'Date cannot be in the future',
+        step1Text: 'This is a built-in Apple app. If you can\'t find it — swipe down on the home screen and type <span class="highlight">Shortcuts</span>',
+        step1App: 'Find the <strong>"Shortcuts"</strong> app',
         step2Text: 'At the bottom of the screen there\'s an <span class="highlight">Automation</span> tab — tap on it',
         step3Text: 'Tap <span class="highlight">+</span> in the top right corner, then select <span class="highlight">Time of Day</span>',
         step4Action: 'Tap <span class="highlight">Next</span>',
@@ -95,7 +103,7 @@ const translations = {
         step4Repeat: 'Repeat: <strong>Daily</strong>',
         step4Day: 'Day: <strong>Monday</strong>',
         step5Text: 'Type <span class="highlight">URL</span> in the search and select <span class="highlight">Get Contents of URL</span>',
-        step5Text2: 'Paste the copied link in the URL field (button below)',
+        step5Text2: 'Paste the copied link in the URL field (button above)',
         step6Text: 'Tap <span class="highlight">+</span> under the first action',
         step6Text2: 'Type <span class="highlight">wallpaper</span> in the search and select <span class="highlight">Set Wallpaper</span>',
         step6Image: 'Image: <strong>Contents of URL</strong> (will be set automatically)',
@@ -107,8 +115,9 @@ const translations = {
     },
     ru: {
         modalTitle: '0-90 календарь',
-        modalDescription: '',
-        section1Title: '1. Настройка',
+        instructionsTitle: 'Автообновление обоев',
+        instructionsSubtitle: 'Настрой автоматизацию, чтобы обои обновлялись каждую неделю',
+        section1Title: '1. Открой приложение «Команды»',
         section2Title: '2. Перейди в «Автоматизация»',
         section3Title: '3. Создай новую автоматизацию',
         section4Title: '4. Настрой расписание',
@@ -117,11 +126,14 @@ const translations = {
         section7Title: '7. Сохрани и отключи подтверждение',
         birthDateLabel: 'Дата рождения',
         iphoneModelLabel: 'Модель iPhone',
+        urlLabel: 'Ссылка для автоматизации',
         yearLabel: 'Год',
         monthLabel: 'Месяц',
         dayLabel: 'День',
         dateErrorInvalid: 'Неверная дата',
         dateErrorFuture: 'Дата не может быть в будущем',
+        step1Text: 'Это встроенное приложение Apple. Если не можешь найти — потяни вниз на домашнем экране и напиши <span class="highlight">Команды</span>',
+        step1App: 'Найди приложение <strong>«Команды»</strong> (Shortcuts)',
         step2Text: 'Внизу экрана есть вкладка <span class="highlight">Автоматизация</span> — нажми на неё',
         step3Text: 'Нажми <span class="highlight">+</span> в правом верхнем углу, затем выбери <span class="highlight">Время суток</span>',
         step4Action: 'Нажми <span class="highlight">Далее</span>',
@@ -129,7 +141,7 @@ const translations = {
         step4Repeat: 'Повтор: <strong>Ежедневно</strong>',
         step4Day: 'День: <strong>Понедельник</strong>',
         step5Text: 'В поиске напиши <span class="highlight">URL</span> и выбери <span class="highlight">Получить содержимое URL</span>',
-        step5Text2: 'В поле URL вставь скопированную ссылку (кнопка ниже)',
+        step5Text2: 'В поле URL вставь скопированную ссылку (кнопка выше)',
         step6Text: 'Нажми <span class="highlight">+</span> под первым действием',
         step6Text2: 'В поиске напиши <span class="highlight">обои</span> и выбери <span class="highlight">Задать обои</span>',
         step6Image: 'Изображение: <strong>Содержимое URL</strong> (подставится автоматически)',
@@ -145,7 +157,8 @@ const translations = {
 function updateModalTranslations() {
     const t = translations[state.language];
     if (modalTitle) modalTitle.textContent = t.modalTitle;
-    if (modalDescription) modalDescription.textContent = t.modalDescription;
+    if (instructionsTitle) instructionsTitle.textContent = t.instructionsTitle;
+    if (instructionsSubtitle) instructionsSubtitle.textContent = t.instructionsSubtitle;
     if (section1Title) section1Title.textContent = t.section1Title;
     if (section2Title) section2Title.textContent = t.section2Title;
     if (section3Title) section3Title.textContent = t.section3Title;
@@ -155,11 +168,14 @@ function updateModalTranslations() {
     if (section7Title) section7Title.textContent = t.section7Title;
     if (birthDateLabel) birthDateLabel.textContent = t.birthDateLabel;
     if (iphoneModelLabel) iphoneModelLabel.textContent = t.iphoneModelLabel;
+    if (urlLabel) urlLabel.textContent = t.urlLabel;
     if (yearLabel) yearLabel.textContent = t.yearLabel;
     if (monthLabel) monthLabel.textContent = t.monthLabel;
     if (dayLabel) dayLabel.textContent = t.dayLabel;
 
     // Update step texts
+    if (step1Text) step1Text.innerHTML = t.step1Text;
+    if (step1App) step1App.innerHTML = t.step1App;
     if (step2Text) step2Text.innerHTML = t.step2Text;
     if (step3Text) step3Text.innerHTML = t.step3Text;
     if (step4Action) step4Action.innerHTML = t.step4Action;

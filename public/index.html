@@ -26,7 +26,7 @@
                     </div>
                 </div>
                 <p class="description" id="description-text">
-                    Create iPhone wallpapers that update every day. Track your life in weeks — from 0 to 90 years — and see how much time you still have.
+                    Создавайте обои для iPhone, которые обновляются каждый день. Отслеживайте свою жизнь по неделям — от 0 до 90 лет — и смотрите, сколько времени у вас еще есть.
                 </p>
             </div>
             <div class="header-right">
@@ -34,7 +34,7 @@
 
                 <div class="language-toggle-group">
                     <label class="toggle-switch">
-                        <input type="checkbox" id="language-toggle" class="toggle-input" checked>
+                        <input type="checkbox" id="language-toggle" class="toggle-input">
                         <span class="toggle-slider">
                             <span class="toggle-label left"><span>ENG</span></span>
                             <span class="toggle-label right"><span>RU</span></span>
@@ -48,7 +48,7 @@
                         <button class="color-circle black" id="color-black" data-color="black"></button>
                         <button class="color-circle white" id="color-white" data-color="gray"></button>
                     </div>
-                    <div class="color-label" id="color-label">Black wallpaper</div>
+                    <div class="color-label" id="color-label">Черные обои</div>
                 </div>
             </div>
         </header>
@@ -59,14 +59,14 @@
                 <button class="nav-arrow nav-arrow-left" id="nav-left"><img src="img/arrow-left.svg"></button>
                 <div class="preview-section">
                     <div class="wallpaper-preview" id="wallpaper-preview">
-                        <img id="preview-image" class="preview-img active" src="img/black_eng.png" alt="Preview">
+                        <img id="preview-image" class="preview-img active" src="img/black_ru.png" alt="Preview">
                  </div>
                 </div>
                 <button class="nav-arrow nav-arrow-right" id="nav-right"><img src="img/arrow-right.svg"></button>
             </div>
 
             <!-- Generate Button -->
-            <button class="generate-btn" id="generate-btn">CREATE BLACK WALLPAPER</button>
+            <button class="generate-btn" id="generate-btn">СОЗДАТЬ ЧЕРНЫЕ ОБОИ</button>
         </div>
     </div>
 
@@ -74,27 +74,25 @@
     <div class="modal-overlay" id="modal-overlay">
         <div class="modal-content">
             <div class="modal-header">
-                <h2 class="modal-title" id="modal-title">0-90 calendar</h2>
+                <h2 class="modal-title" id="modal-title">0-90 календарь</h2>
                 <button class="modal-close" id="modal-close">×</button>
             </div>
 
-            <!-- Section 1: Configure -->
-            <div class="modal-section">
-                <h3 class="section-title">1. <span id="section-1-title">Configure</span></h3>
-                
+            <!-- Generation Form (top block) -->
+            <div class="modal-section generation-form">
                 <div class="form-group">
-                    <label for="birth-year" id="birth-date-label">Date of Birth</label>
+                    <label for="birth-year" id="birth-date-label">Дата рождения</label>
                     <div class="date-inputs">
                         <div class="date-input-wrapper">
-                            <span class="date-input-label" id="year-label">Year</span>
+                            <span class="date-input-label" id="year-label">Год</span>
                             <input type="number" id="birth-year" class="date-input" placeholder="2009" min="1900" max="2100">
                         </div>
                         <div class="date-input-wrapper">
-                            <span class="date-input-label" id="month-label">Month</span>
+                            <span class="date-input-label" id="month-label">Месяц</span>
                             <input type="number" id="birth-month" class="date-input" placeholder="8" min="1" max="12">
                         </div>
                         <div class="date-input-wrapper">
-                            <span class="date-input-label" id="day-label">Day</span>
+                            <span class="date-input-label" id="day-label">День</span>
                             <input type="number" id="birth-day" class="date-input" placeholder="1" min="1" max="31">
                         </div>
                     </div>
@@ -102,7 +100,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="iphone-model" id="iphone-model-label">iPhone Model</label>
+                    <label for="iphone-model" id="iphone-model-label">Модель iPhone</label>
                     <select id="iphone-model" class="form-select">
                         <option value="iphone13mini">iPhone 13 mini</option>
                         <option value="iphone13">iPhone 13 / 13 Pro / 14 / 14 Pro</option>
@@ -116,9 +114,42 @@
                         <option value="iphone17promax">iPhone 17 Pro Max</option>
                     </select>
                 </div>
+
+                <div class="form-group">
+                    <label id="url-label">Ссылка для автоматизации</label>
+                    <div class="url-container">
+                        <input type="text" id="api-url" class="url-input" readonly value="">
+                        <button class="copy-btn" id="copy-btn" title="Скопировать">
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M5.5 3.5H3.5C2.67157 3.5 2 4.17157 2 5V12.5C2 13.3284 2.67157 14 3.5 14H11C11.8284 14 12.5 13.3284 12.5 12.5V10.5M5.5 3.5C5.5 2.67157 6.17157 2 7 2H9.5M5.5 3.5C5.5 4.32843 6.17157 5 7 5H9.5M12.5 10.5H9.5M12.5 10.5V7.5M12.5 10.5L9.5 7.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
             </div>
 
-            <!-- Section 2: Go to Automation -->
+            <!-- Instructions Header -->
+            <div class="instructions-header">
+                <span class="instructions-icon">📱</span>
+                <h3 class="instructions-title" id="instructions-title">Автообновление обоев</h3>
+            </div>
+            <p class="instructions-subtitle" id="instructions-subtitle">Настрой автоматизацию, чтобы обои обновлялись каждую неделю</p>
+
+            <!-- Step 1: Open Shortcuts app -->
+            <div class="modal-section">
+                <h3 class="section-title" id="section-1-title">1. Открой приложение «Команды»</h3>
+                <div class="instruction-text" id="step-1-text">
+                    Это встроенное приложение Apple. Если не можешь найти — потяни вниз на домашнем экране и напиши <span class="highlight">Команды</span>
+                </div>
+                <div class="info-block">
+                    <div class="info-row">
+                        <span class="info-icon">📱</span>
+                        <span id="step-1-app">Найди приложение <strong>«Команды»</strong> (Shortcuts)</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 2: Go to Automation -->
             <div class="modal-section">
                 <h3 class="section-title" id="section-2-title">2. Перейди в «Автоматизация»</h3>
                 <div class="instruction-text" id="step-2-text">
@@ -126,7 +157,7 @@
                 </div>
             </div>
 
-            <!-- Section 3: Create new automation -->
+            <!-- Step 3: Create new automation -->
             <div class="modal-section">
                 <h3 class="section-title" id="section-3-title">3. Создай новую автоматизацию</h3>
                 <div class="instruction-text" id="step-3-text">
@@ -134,7 +165,7 @@
                 </div>
             </div>
 
-            <!-- Section 4: Set schedule -->
+            <!-- Step 4: Set schedule -->
             <div class="modal-section">
                 <h3 class="section-title" id="section-4-title">4. Настрой расписание</h3>
                 <div class="info-block">
@@ -156,29 +187,18 @@
                 </div>
             </div>
 
-            <!-- Section 5: Add download action -->
+            <!-- Step 5: Add download action -->
             <div class="modal-section">
                 <h3 class="section-title" id="section-5-title">5. Добавь действие загрузки</h3>
                 <div class="instruction-text" id="step-5-text">
                     В поиске напиши <span class="highlight">URL</span> и выбери <span class="highlight">Получить содержимое URL</span>
                 </div>
                 <div class="instruction-text" id="step-5-text-2">
-                    В поле URL вставь скопированную ссылку (кнопка ниже)
-                </div>
-
-                <div class="action-item">
-                    <div class="url-container">
-                        <input type="text" id="api-url" class="url-input" readonly value="https://lifeweeks.vercel.app/api/cal?type=life&birth=2009-08-01&lifes">
-                        <button class="copy-btn" id="copy-btn" title="Copy URL">
-                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M5.5 3.5H3.5C2.67157 3.5 2 4.17157 2 5V12.5C2 13.3284 2.67157 14 3.5 14H11C11.8284 14 12.5 13.3284 12.5 12.5V10.5M5.5 3.5C5.5 2.67157 6.17157 2 7 2H9.5M5.5 3.5C5.5 4.32843 6.17157 5 7 5H9.5M12.5 10.5H9.5M12.5 10.5V7.5M12.5 10.5L9.5 7.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                            </svg>
-                        </button>
-                    </div>
+                    В поле URL вставь скопированную ссылку (кнопка выше)
                 </div>
             </div>
 
-            <!-- Section 6: Add wallpaper setup -->
+            <!-- Step 6: Add wallpaper setup -->
             <div class="modal-section">
                 <h3 class="section-title" id="section-6-title">6. Добавь установку обоев</h3>
                 <div class="instruction-text" id="step-6-text">
@@ -199,7 +219,7 @@
                 </div>
             </div>
 
-            <!-- Section 7: Save and disable confirmation -->
+            <!-- Step 7: Save and disable confirmation -->
             <div class="modal-section">
                 <h3 class="section-title" id="section-7-title">7. Сохрани и отключи подтверждение</h3>
                 <div class="instruction-text" id="step-7-text">

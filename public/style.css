@@ -518,6 +518,36 @@ color: #9f9f9f;
     margin-bottom: 20px;
 }
 
+.generation-form {
+    border-bottom: 1px solid #e0e0e0;
+    padding-bottom: 20px;
+    margin-bottom: 24px;
+}
+
+.instructions-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+
+.instructions-icon {
+    font-size: 18px;
+}
+
+.instructions-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #333;
+    margin: 0;
+}
+
+.instructions-subtitle {
+    font-size: 14px;
+    color: #666;
+    margin: 0 0 20px 0;
+}
+
 .section-title {
     font-size: 16px;
     font-weight: 700;
