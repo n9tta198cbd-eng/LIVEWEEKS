@@ -58,9 +58,11 @@ const tipText = document.getElementById('tip-text');
 // Info block elements
 const step4Time = document.getElementById('step-4-time');
 const step4Repeat = document.getElementById('step-4-repeat');
-const step4Day = document.getElementById('step-4-day');
+const step4Run = document.getElementById('step-4-run');
 const step6Image = document.getElementById('step-6-image');
 const step6Screen = document.getElementById('step-6-screen');
+const step6Preview = document.getElementById('step-6-preview');
+const step6Crop = document.getElementById('step-6-crop');
 const yearLabel = document.getElementById('year-label');
 const monthLabel = document.getElementById('month-label');
 const dayLabel = document.getElementById('day-label');
@@ -85,7 +87,7 @@ const translations = {
         section4Title: '4. Set schedule',
         section5Title: '5. Add download action',
         section6Title: '6. Add wallpaper setup',
-        section7Title: '7. Save and disable confirmation',
+        section7Title: '7. Save',
         birthDateLabel: 'Date of Birth',
         iphoneModelLabel: 'iPhone Model',
         urlLabel: 'Link for automation',
@@ -98,18 +100,20 @@ const translations = {
         step1App: 'Find the <strong>"Shortcuts"</strong> app',
         step2Text: 'At the bottom of the screen there\'s an <span class="highlight">Automation</span> tab — tap on it',
         step3Text: 'Tap <span class="highlight">+</span> in the top right corner, then select <span class="highlight">Time of Day</span>',
-        step4Action: 'Tap <span class="highlight">Next</span>',
+        step4Action: 'Tap <span class="highlight">Next</span>, new automation',
         step4Time: 'Time: <strong>any convenient</strong> (e.g., 7:00)',
-        step4Repeat: 'Repeat: <strong>Daily</strong>',
-        step4Day: 'Day: <strong>Monday</strong>',
-        step5Text: 'Type <span class="highlight">URL</span> in the search and select <span class="highlight">Get Contents of URL</span>',
-        step5Text2: 'Paste the copied link in the URL field (button above)',
-        step6Text: 'Tap <span class="highlight">+</span> under the first action',
-        step6Text2: 'Type <span class="highlight">wallpaper</span> in the search and select <span class="highlight">Set Wallpaper</span>',
+        step4Repeat: 'Repeat: <strong>By day</strong>',
+        step4Run: 'Run: <strong>Immediately</strong>',
+        step5Text: 'In the search type <span class="highlight">Get Contents of URL</span>',
+        step5Text2: 'In the URL field paste the link (link above)',
+        step6Text: 'In the search type <span class="highlight">wallpaper</span> and select <span class="highlight">Set Wallpaper</span>',
+        step6Text2: 'Tap the arrow in circle and disable:',
         step6Image: 'Image: <strong>Contents of URL</strong> (will be set automatically)',
         step6Screen: 'Screen: select <strong>Lock Screen</strong>',
+        step6Preview: '<strong>Show preview</strong> — disable',
+        step6Crop: '<strong>Crop to theme</strong> — disable',
         step7Text: 'Tap <span class="highlight">Done</span>',
-        step7Text2: 'Important: disable <span class="highlight">Ask Before Running</span> so wallpapers change automatically without your participation',
+        step7Text2: 'Important: change <span class="highlight">Run after confirmation</span> to <span class="highlight">Run immediately</span>',
         tipTitle: '💡 Tip',
         tipText: 'To check everything works — in the automations list tap on the created one and select <strong>Run</strong>. Wallpapers should update immediately.'
     },
@@ -123,7 +127,7 @@ const translations = {
         section4Title: '4. Настрой расписание',
         section5Title: '5. Добавь действие загрузки',
         section6Title: '6. Добавь установку обоев',
-        section7Title: '7. Сохрани и отключи подтверждение',
+        section7Title: '7. Сохрани',
         birthDateLabel: 'Дата рождения',
         iphoneModelLabel: 'Модель iPhone',
         urlLabel: 'Ссылка для автоматизации',
@@ -136,18 +140,20 @@ const translations = {
         step1App: 'Найди приложение <strong>«Команды»</strong> (Shortcuts)',
         step2Text: 'Внизу экрана есть вкладка <span class="highlight">Автоматизация</span> — нажми на неё',
         step3Text: 'Нажми <span class="highlight">+</span> в правом верхнем углу, затем выбери <span class="highlight">Время суток</span>',
-        step4Action: 'Нажми <span class="highlight">Далее</span>',
+        step4Action: 'Нажми <span class="highlight">Далее</span>, новая автоматизация',
         step4Time: 'Время: <strong>любое удобное</strong> (например, 7:00)',
-        step4Repeat: 'Повтор: <strong>Ежедневно</strong>',
-        step4Day: 'День: <strong>Понедельник</strong>',
-        step5Text: 'В поиске напиши <span class="highlight">URL</span> и выбери <span class="highlight">Получить содержимое URL</span>',
-        step5Text2: 'В поле URL вставь скопированную ссылку (кнопка выше)',
-        step6Text: 'Нажми <span class="highlight">+</span> под первым действием',
-        step6Text2: 'В поиске напиши <span class="highlight">обои</span> и выбери <span class="highlight">Задать обои</span>',
+        step4Repeat: 'Повтор: <strong>По дням</strong>',
+        step4Run: 'Запуск: <strong>Немедленный запуск</strong>',
+        step5Text: 'В поиске введите <span class="highlight">Получить содержимое URL</span>',
+        step5Text2: 'В поле URL адрес вставьте ссылку (ссылка выше)',
+        step6Text: 'В поиске напиши <span class="highlight">обои</span> и выбери <span class="highlight">Задать обои</span>',
+        step6Text2: 'Нажми на стрелочку в кружке и отключи:',
         step6Image: 'Изображение: <strong>Содержимое URL</strong> (подставится автоматически)',
         step6Screen: 'Экран: выбери <strong>Экран блокировки</strong>',
+        step6Preview: '<strong>Показать окно просмотра</strong> — отключи',
+        step6Crop: '<strong>Обрезать до темы</strong> — отключи',
         step7Text: 'Нажми <span class="highlight">Готово</span>',
-        step7Text2: 'Важно: отключи <span class="highlight">Спрашивать до запуска</span>, чтобы обои менялись автоматически без твоего участия',
+        step7Text2: 'Важно: измени <span class="highlight">Запуск после подтверждения</span> на <span class="highlight">Немедленный запуск</span>',
         tipTitle: '💡 Совет',
         tipText: 'Чтобы проверить, что всё работает — в списке автоматизаций нажми на созданную и выбери <strong>Выполнить</strong>. Обои должны сразу обновиться.'
     }
@@ -191,9 +197,11 @@ function updateModalTranslations() {
     // Update info block texts
     if (step4Time) step4Time.innerHTML = t.step4Time;
     if (step4Repeat) step4Repeat.innerHTML = t.step4Repeat;
-    if (step4Day) step4Day.innerHTML = t.step4Day;
+    if (step4Run) step4Run.innerHTML = t.step4Run;
     if (step6Image) step6Image.innerHTML = t.step6Image;
     if (step6Screen) step6Screen.innerHTML = t.step6Screen;
+    if (step6Preview) step6Preview.innerHTML = t.step6Preview;
+    if (step6Crop) step6Crop.innerHTML = t.step6Crop;
 
     // Update API URL
     updateApiUrl();
